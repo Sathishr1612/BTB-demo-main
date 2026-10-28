@@ -365,3 +365,5 @@ code { color: var(--btb-purple-deep); }
 .pb-blog .photo-banner-img { object-position: 50% 60%; }
 .pb-faq .photo-banner-img { object-position: 50% 45%; }
 @media (max-width: 767.98px) { .photo-banner.pb-wide .photo-banner-img { width: 100%; opacity: .35; -webkit-mask-image: none; mask-image: none; } }
+
+.pb-study .photo-banner-img { object-position: 50% 58%; }
