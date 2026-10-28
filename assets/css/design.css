@@ -16,7 +16,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 .brand { gap: .85rem; margin-right: 1.25rem; color: #25124a; }
 .brand:hover { color: #25124a; }
 .brand img, .site-header.is-scrolled .brand img {
-  height: 3.1rem; width: auto; background: #25124a; border-radius: .85rem; padding: .3rem .55rem; transition: none;
+  height: 3.6rem; width: auto; background: #25124a; border-radius: 1rem; padding: .22rem .4rem; transition: none;
 }
 .brand-name { color: #25124a; font-size: 1.05rem; font-weight: 800; letter-spacing: .04em; }
 .brand-sub { color: #a07d12; font-size: .68rem; font-weight: 600; letter-spacing: .34em; }
@@ -38,11 +38,11 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 
 /* Student Login / My Courses: a plain solid button */
 .site-header .nav-item:last-child .nav-link {
-  margin-left: .75rem; padding: .6rem 1.25rem; color: #fff; background: #25124a; border-radius: .6rem;
-  box-shadow: none; transition: background .2s;
+  margin-left: .9rem; padding: .62rem 1.5rem; font-size: .95rem; font-weight: 600; line-height: 1.2; color: #fff;
+  background: #25124a; border-radius: 999px; box-shadow: 0 6px 16px rgba(37, 18, 74, .25); transition: background .2s, box-shadow .2s;
 }
 .site-header .nav-item:last-child .nav-link::after { display: none !important; }
-.site-header .nav-item:last-child .nav-link:hover { background: #7e22ce; color: #fff; transform: none; }
+.site-header .nav-item:last-child .nav-link:hover { background: #7e22ce; color: #fff; transform: none; box-shadow: 0 8px 20px rgba(126, 34, 206, .35); }
 .site-header .nav-item:last-child .nav-link[aria-current="page"] { background: #7e22ce; color: #fff; }
 
 .navbar-toggler { border: 1px solid #d9cbe9; border-radius: .6rem; padding: .45rem .7rem; background: #fff; }
@@ -52,14 +52,14 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 @media (max-width: 1199.98px) and (min-width: 992px) {
   .brand-sub { display: none; }
   .brand-name { font-size: .88rem; }
-  .brand img, .site-header.is-scrolled .brand img { height: 2.7rem; }
+  .brand img, .site-header.is-scrolled .brand img { height: 3rem; }
   .site-header .nav-link { padding: .5rem .55rem; font-size: .84rem; }
   .site-header .nav-link::after { left: .55rem; right: .55rem; }
   .site-header .nav-item:last-child .nav-link { padding: .5rem .9rem; margin-left: .3rem; }
 }
 @media (max-width: 991.98px) {
   .site-header .navbar { padding: .55rem 0 !important; }
-  .brand img, .site-header.is-scrolled .brand img { height: 2.6rem; }
+  .brand img, .site-header.is-scrolled .brand img { height: 3rem; }
   .brand-name { font-size: .88rem; }
   .site-header .navbar-collapse { flex-basis: 100%; margin-top: .6rem; padding: .4rem 0 .7rem; border-top: 1px solid #ece4f5; }
   .site-header .navbar-nav { gap: 0; }
