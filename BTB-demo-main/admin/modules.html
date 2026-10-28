@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Modules | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="modules">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><div><a href="courses.html">&larr; All courses</a><h1>Modules: <span id="courseName"></span></h1></div><button class="btn-btb btn-sm-btb" type="button" id="addModule"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Module</button></div>
+      <div id="moduleList" aria-live="polite"></div>
+      <div class="modal fade" id="moduleModal" tabindex="-1" aria-labelledby="moduleModalTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><form class="modal-content" id="moduleForm" novalidate>
+        <div class="modal-header"><h2 class="modal-title h5" id="moduleModalTitle">Add module</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body"><div class="mb-3"><label class="form-label req" for="mTitle">Module name</label><input class="form-control" id="mTitle" name="title" maxlength="120" required><div class="invalid-feedback">Enter a name.</div></div>
+          <div class="mb-0"><label class="form-label" for="mDesc">Description</label><textarea class="form-control" id="mDesc" name="description" rows="3" maxlength="2000"></textarea></div>
+          <div class="mt-3"><label class="form-label" for="mStatus">Status</label><select class="form-select" id="mStatus" name="status"><option value="published">Published (visible)</option><option value="draft">Draft (hidden)</option></select></div>
+          <div class="alert alert-danger mt-3 mb-0" id="moduleError" role="alert" hidden></div></div>
+        <div class="modal-footer"><button type="button" class="btn-btb-outline btn-sm-btb" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn-btb btn-sm-btb" id="moduleSave">Save module</button></div>
+      </form></div></div>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

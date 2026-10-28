@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Videos | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="videos">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><h1>Videos</h1><a class="btn-btb btn-sm-btb" href="video-edit.html"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add New Video</a></div>
+      <form class="admin-card mb-3" id="filterForm" role="search"><div class="row g-2">
+        <div class="col-12 col-md-4"><label class="form-label" for="fSearch">Search by title</label><input class="form-control" id="fSearch" type="search" placeholder="Search videos" autocomplete="off"></div>
+        <div class="col-6 col-md-3"><label class="form-label" for="fCourse">Course</label><select class="form-select" id="fCourse"><option value="">All courses</option></select></div>
+        <div class="col-6 col-md-3"><label class="form-label" for="fModule">Module</label><select class="form-select" id="fModule"><option value="">All modules</option></select></div>
+        <div class="col-12 col-md-2"><label class="form-label" for="fStatus">Status</label><select class="form-select" id="fStatus"><option value="">All</option><option value="published">Published</option><option value="draft">Draft</option></select></div>
+      </div></form>
+      <div id="videoList" aria-live="polite"></div>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

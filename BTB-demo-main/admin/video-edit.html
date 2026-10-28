@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Video | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="video-edit">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><h1 id="pageTitle">Add New Video</h1><a href="videos.html">&larr; Back to videos</a></div>
+      <form class="admin-card" id="videoForm" novalidate>
+        <div class="row g-3">
+          <div class="col-12"><label class="form-label req" for="vTitle">Video title</label><input class="form-control" id="vTitle" maxlength="160" required><div class="invalid-feedback">Enter a title.</div></div>
+          <div class="col-md-6"><label class="form-label req" for="vCourse">Course</label><select class="form-select" id="vCourse" required><option value="">Select a course</option></select><div class="invalid-feedback">Choose a course.</div></div>
+          <div class="col-md-6"><label class="form-label req" for="vModule">Module</label><select class="form-select" id="vModule" required disabled><option value="">Select a course first</option></select><div class="invalid-feedback">Choose a module.</div></div>
+          <div class="col-12"><label class="form-label" for="vDesc">Description <span class="text-muted">(optional)</span></label><textarea class="form-control" id="vDesc" rows="3" maxlength="4000"></textarea></div>
+          <div class="col-md-6"><label class="form-label" for="vThumb">Thumbnail <span class="text-muted">(optional)</span></label><input class="form-control" id="vThumb" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="tLimit thumbInfo"><div class="form-text" id="tLimit"></div><div class="small" id="thumbInfo" aria-live="polite"></div><div class="thumb-preview" id="thumbPreview" hidden></div></div>
+          <div class="col-md-6"><label class="form-label req" for="vFile" id="vFileLabel">Video file</label><input class="form-control" id="vFile" type="file" accept="video/mp4,video/webm" aria-describedby="vLimit fileInfo"><div class="invalid-feedback">Choose a valid video file.</div><div class="form-text" id="vLimit"></div><div class="small" id="fileInfo" aria-live="polite"></div><div class="small mt-1" id="currentFile" hidden></div></div>
+          <div class="col-md-6"><label class="form-label" for="vStatus">Publication status</label><select class="form-select" id="vStatus"><option value="draft">Draft (hidden from website)</option><option value="published">Published (visible on website)</option></select></div>
+          <div class="col-md-3"><label class="form-label" for="vOrder">Lesson order</label><input class="form-control" id="vOrder" type="number" min="1" max="9999" step="1" aria-describedby="vOrderHelp"><div class="form-text" id="vOrderHelp">Leave empty to add at the end.</div></div>
+          <div class="col-md-9 d-flex align-items-end"><div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="vPreview"><label class="form-check-label" for="vPreview">Free preview <span class="text-muted">(anyone can watch this lesson, even if the course is paid)</span></label></div></div>
+        </div>
+        <div class="mt-4" id="progressBox" hidden><div class="d-flex justify-content-between small mb-1"><span id="progressText" aria-live="polite">Uploading...</span></div><div class="progress upload-progress"><div class="progress-bar" id="progressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Upload progress"></div></div></div>
+        <div class="alert alert-danger mt-3 mb-0" id="formError" role="alert" hidden></div>
+        <div class="sticky-actions">
+          <button class="btn-btb-outline btn-sm-btb" type="submit" value="draft">Save Draft</button>
+          <button class="btn-btb btn-sm-btb" type="submit" value="published">Publish</button>
+          <button class="btn-btb-outline btn-sm-btb ms-auto" type="button" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/vendor/tus/tus.min.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

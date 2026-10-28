@@ -1,0 +1,6 @@
+# Replace https://www.example.com with the final domain before launch.
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://www.example.com/sitemap.xml

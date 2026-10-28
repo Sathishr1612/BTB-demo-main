@@ -1,0 +1,4 @@
+# Only used if you deploy with the Supabase CLI (`supabase functions deploy`).
+# The webhook is called by Razorpay (no user JWT), so JWT verification is off for it; it is protected by the HMAC signature.
+[functions.razorpay-webhook]
+verify_jwt = false

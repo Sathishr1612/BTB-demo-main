@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sign in | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="login">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main class="login-wrap" id="main">
+    <div class="admin-card login-card">
+      <div class="text-center mb-3"><img src="../assets/images/btb-logo.png" alt="BTB Academy" width="90" height="58"></div>
+      <h1 class="h4 text-center mb-1">Admin sign in</h1>
+      <p class="text-center text-muted mb-4">Break the Barriers Academy</p>
+      <div id="loginSetup"></div>
+      <form id="loginForm" novalidate>
+        <div class="mb-3"><label class="form-label" for="email">Email</label><input class="form-control" id="email" name="email" type="email" autocomplete="username" required><div class="invalid-feedback">Enter your email address.</div></div>
+        <div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required><div class="invalid-feedback">Enter your password.</div></div>
+        <div class="alert alert-danger" id="loginError" role="alert" hidden></div>
+        <button class="btn-btb btn-block-btb" id="loginBtn" type="submit">Sign in</button>
+      </form>
+      <p class="text-center mt-3 mb-0"><a href="../index.html">Back to website</a></p>
+    </div>
+  </main>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

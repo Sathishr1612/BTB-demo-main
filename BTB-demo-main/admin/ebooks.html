@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ebooks | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="ebooks">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><h1>Ebooks</h1><button class="btn-btb btn-sm-btb" type="button" id="addEbook"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Ebook</button></div>
+      <div id="ebookList" aria-live="polite"></div>
+      <div class="modal fade" id="ebookModal" tabindex="-1" aria-labelledby="ebookModalTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable modal-lg"><form class="modal-content" id="ebookForm" novalidate>
+        <div class="modal-header"><h2 class="modal-title h5" id="ebookModalTitle">Add ebook</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body"><div class="row g-3">
+          <div class="col-12"><label class="form-label req" for="eTitle">Title</label><input class="form-control" id="eTitle" name="title" maxlength="160" required><div class="invalid-feedback">Enter a title.</div></div>
+          <div class="col-12"><label class="form-label" for="eDesc">Description</label><textarea class="form-control" id="eDesc" name="description" rows="3" maxlength="4000"></textarea></div>
+          <div class="col-md-6"><label class="form-label" for="eCover">Cover image</label><input class="form-control" id="eCover" name="cover" type="file" accept="image/jpeg,image/png,image/webp"><div class="form-text" id="eCoverLimit"></div><div class="small" id="eCoverInfo" aria-live="polite"></div><div class="thumb-preview" id="eCoverPreview" hidden></div></div>
+          <div class="col-md-6"><label class="form-label" for="eFile">Ebook file <span class="text-muted">(PDF or EPUB)</span></label><input class="form-control" id="eFile" name="file" type="file" accept="application/pdf,application/epub+zip"><div class="form-text" id="eFileLimit"></div><div class="small" id="eFileInfo" aria-live="polite"></div><div class="small mt-1" id="eCurrentFile" hidden></div></div>
+          <div class="col-md-8"><label class="form-label" for="eUrl">Or a download link <span class="text-muted">(https only)</span></label><input class="form-control" id="eUrl" name="url" type="url" maxlength="500" placeholder="https://"><div class="invalid-feedback">Enter a full https:// link.</div></div>
+          <div class="col-md-4"><label class="form-label" for="eStatus">Status</label><select class="form-select" id="eStatus" name="status"><option value="draft">Draft (hidden)</option><option value="published">Published</option></select></div>
+        </div>
+        <div class="mt-3" id="eProgressBox" hidden><div class="small mb-1" id="eProgressText" aria-live="polite">Uploading...</div><div class="progress upload-progress"><div class="progress-bar" id="eProgressBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Upload progress"></div></div></div>
+        <div class="alert alert-danger mt-3 mb-0" id="ebookError" role="alert" hidden></div></div>
+        <div class="modal-footer"><button type="button" class="btn-btb-outline btn-sm-btb" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn-btb btn-sm-btb" id="ebookSave">Save ebook</button></div>
+      </form></div></div>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/vendor/tus/tus.min.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

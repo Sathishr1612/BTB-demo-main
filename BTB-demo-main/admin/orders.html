@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Orders & Payments | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="orders">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><h1>Orders &amp; Payments</h1></div>
+      <p class="text-muted">Read-only. An order is marked <strong>Paid</strong> only by the server after Razorpay's signature and payment status have been verified &mdash; it cannot be changed from this screen.</p>
+      <div id="orderStats" class="mb-3" aria-live="polite"></div>
+      <form class="admin-card mb-3" id="ordFilter"><div class="row g-2">
+        <div class="col-12 col-md-5"><label class="form-label" for="oSearch">Search student or course</label><input class="form-control" id="oSearch" type="search" autocomplete="off"></div>
+        <div class="col-12 col-md-3"><label class="form-label" for="oStatus">Status</label><select class="form-select" id="oStatus"><option value="">All</option><option value="paid">Paid</option><option value="pending">Awaiting confirmation</option><option value="created">Not completed</option><option value="failed">Failed</option><option value="cancelled">Cancelled</option></select></div>
+      </div></form>
+      <div id="orderList" aria-live="polite"></div>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

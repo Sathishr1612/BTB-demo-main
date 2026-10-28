@@ -1,0 +1,217 @@
+/* ==========================================================================
+   BTB Academy - app styles (dynamic pages + admin). Loaded after style.css and uses its tokens.
+   1. Page banner  2. States  3. Catalog cards  4. Course page  5. Library  6. Player
+   7. Contact  8. Admin shell  9. Admin tables/forms
+   ========================================================================== */
+
+/* 1. Page banner ------------------------------------------------------------ */
+.page-banner { background: linear-gradient(180deg, #fcf9ff 0%, #f1e4ff 100%); padding: clamp(2rem, 5vw, 3.5rem) 0; border-bottom: 1px solid var(--btb-line); }
+.page-banner h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); margin-bottom: .5rem; }
+.page-banner p { color: var(--btb-muted); max-width: 40rem; margin-bottom: 0; }
+.page-section { padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(3rem, 6vw, 5rem); min-height: 50vh; }
+.lead-text { font-size: 1.08rem; color: var(--btb-text); }
+code { color: var(--btb-purple-deep); }
+
+/* 2. Loading / empty / error ------------------------------------------------- */
+.state-box { text-align: center; padding: 3rem 1.25rem; background: #fff; border: 1px dashed #d8c8ec; border-radius: var(--btb-radius); color: var(--btb-muted); }
+.state-box h3 { font-size: 1.2rem; margin-bottom: .4rem; }
+.state-box p { max-width: 32rem; margin: 0 auto 1rem; }
+.state-icon { display: block; font-size: 2.25rem; color: var(--btb-purple-deep); margin-bottom: .5rem; }
+.state-box--error .state-icon { color: #b42318; }
+.state-box .btn-btb, .state-box .btn-btb-outline { margin-top: .25rem; }
+
+/* 3. Catalog cards ------------------------------------------------------------ */
+.catalog-card { display: flex; flex-direction: column; width: 100%; background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius); box-shadow: var(--btb-shadow-sm); overflow: hidden; transition: box-shadow .2s, transform .2s; }
+.catalog-card:hover { box-shadow: var(--btb-shadow); transform: translateY(-3px); }
+.catalog-thumb { position: relative; display: block; }
+.thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #3d1f7a, #25124a); overflow: hidden; }
+.thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.thumb-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: rgba(255, 255, 255, .55); }
+.dur-badge { position: absolute; right: .6rem; bottom: .6rem; background: rgba(27, 14, 56, .88); color: #fff; font-size: .78rem; font-weight: 600; padding: .15rem .5rem; border-radius: .4rem; }
+.catalog-body { display: flex; flex-direction: column; gap: .5rem; padding: 1.15rem 1.25rem 1.35rem; flex: 1; }
+.catalog-body h3 { font-size: 1.12rem; margin: 0; }
+.catalog-body h3 a { color: var(--btb-charcoal); text-decoration: none; }
+.catalog-body h3 a:hover { color: var(--btb-purple-deep); text-decoration: underline; }
+.catalog-body p { color: var(--btb-muted); font-size: .94rem; margin: 0; }
+.clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.level-badge { align-self: flex-start; display: inline-block; background: var(--btb-lavender-soft); color: var(--btb-purple-deep); font-size: .75rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: .2rem .65rem; border-radius: 999px; }
+.meta-line { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; color: var(--btb-muted); font-size: .9rem; }
+.meta-line i { color: var(--btb-purple-deep); margin-right: .35rem; }
+
+/* 4. Course page ---------------------------------------------------------------- */
+.course-hero-img { border-radius: var(--btb-radius); overflow: hidden; box-shadow: var(--btb-shadow); }
+.objective-list { list-style: none; padding: 0; display: grid; gap: .6rem 1.5rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.objective-list li { display: flex; gap: .6rem; }
+.objective-list i { color: var(--btb-purple-deep); margin-top: .2rem; }
+.module-block { background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius-sm); padding: 1.1rem 1.25rem; margin-bottom: 1rem; box-shadow: var(--btb-shadow-sm); }
+.module-block header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1rem; }
+.module-block h3, .module-heading { font-size: 1.1rem; margin: 0; }
+.module-no { display: inline-block; margin-right: .6rem; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--btb-purple-deep); }
+.module-count { font-size: .85rem; color: var(--btb-muted); }
+.module-desc, .module-empty { color: var(--btb-muted); font-size: .92rem; margin: .5rem 0 0; }
+.lesson-list { list-style: none; padding: 0; margin: .75rem 0 0; }
+.lesson-list li + li { border-top: 1px solid var(--btb-line); }
+.lesson-list a { display: flex; align-items: center; gap: .7rem; padding: .65rem .25rem; text-decoration: none; color: var(--btb-text); border-radius: .5rem; }
+.lesson-list a:hover { background: var(--btb-lavender-soft); color: var(--btb-charcoal); }
+.lesson-list a.is-current { background: var(--btb-lavender-soft); font-weight: 600; color: var(--btb-charcoal); }
+.lesson-list i { color: var(--btb-purple-deep); font-size: 1.15rem; }
+.lesson-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.lesson-dur { font-size: .85rem; color: var(--btb-muted); font-variant-numeric: tabular-nums; }
+
+/* 5. Library --------------------------------------------------------------------- */
+.library-bar { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 1.5rem; }
+.library-bar .search-box { flex: 1 1 16rem; position: relative; }
+.library-bar .search-box i { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); color: var(--btb-muted); }
+.library-bar .search-box input { padding-left: 2.4rem; }
+.library-bar select { flex: 0 1 16rem; }
+.result-note { color: var(--btb-muted); }
+.btn-link-plain { background: none; border: 0; padding: .25rem 0; color: var(--btb-purple-deep); font-weight: 600; cursor: pointer; margin-bottom: .75rem; }
+.btn-link-plain:hover { text-decoration: underline; }
+.module-heading { padding-bottom: .6rem; margin-bottom: 1rem; border-bottom: 2px solid var(--btb-line); }
+
+/* 6. Player ------------------------------------------------------------------------ */
+.crumbs { margin-bottom: 1rem; }
+.crumbs a { font-weight: 600; text-decoration: none; }
+.player-wrap { position: relative; background: #000; border-radius: var(--btb-radius-sm); overflow: hidden; aspect-ratio: 16 / 9; box-shadow: var(--btb-shadow); }
+.player-wrap video { width: 100%; height: 100%; display: block; background: #000; }
+.player-msg { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; background: rgba(27, 14, 56, .94); color: #fff; }
+.player-msg[hidden] { display: none; }
+.side-card { background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius-sm); padding: 1rem 1.1rem; box-shadow: var(--btb-shadow-sm); }
+.lesson-list--side { margin-top: .4rem; }
+
+/* 7. Contact ------------------------------------------------------------------------- */
+.contact-list { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: .9rem; }
+.contact-list li { display: flex; gap: .8rem; align-items: flex-start; }
+.contact-list i { color: var(--btb-purple-deep); font-size: 1.2rem; }
+.form-card { background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius); box-shadow: var(--btb-shadow); padding: clamp(1.25rem, 3vw, 2rem); }
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.form-status { margin-top: 1rem; border-radius: .6rem; padding: 0; }
+.form-status.is-ok, .form-status.is-error { padding: .8rem 1rem; }
+.form-status.is-ok { background: #e7f6ec; color: #14532d; }
+.form-status.is-error { background: #fdecea; color: #7a1c13; }
+.featured-more { text-align: center; margin-top: 2rem; }
+
+/* 8. Admin shell ---------------------------------------------------------------------- */
+.admin-body { background: #f6f3fa; min-height: 100vh; }
+.admin-layout { display: flex; min-height: 100vh; }
+.admin-side { width: 15rem; flex: none; background: var(--btb-charcoal); color: #fff; display: flex; flex-direction: column; padding: 1.25rem 1rem; position: sticky; top: 0; height: 100vh; }
+.admin-brand { display: flex; align-items: center; gap: .6rem; color: #fff; text-decoration: none; margin-bottom: 1.5rem; font-family: var(--btb-font-head); font-weight: 700; }
+.admin-brand img { height: 2.4rem; width: auto; }
+.admin-brand small { display: block; font-weight: 500; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--btb-gold); }
+.admin-nav { list-style: none; padding: 0; margin: 0; display: grid; gap: .25rem; flex: 1; align-content: start; }
+.admin-nav a, .admin-nav button { display: flex; align-items: center; gap: .7rem; width: 100%; background: none; border: 0; text-align: left; padding: .7rem .85rem; border-radius: .6rem; color: rgba(255, 255, 255, .85); text-decoration: none; font-weight: 500; font-size: 1rem; cursor: pointer; }
+.admin-nav a:hover, .admin-nav button:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.admin-nav a[aria-current="page"] { background: rgba(255, 255, 255, .16); color: #fff; }
+.admin-main { flex: 1; min-width: 0; padding: clamp(1rem, 3vw, 2rem); }
+.admin-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-bottom: 1.25rem; }
+.admin-top h1 { font-size: 1.6rem; margin: 0; }
+.admin-mobilebar { display: none; }
+@media (max-width: 991.98px) {
+  .admin-layout { display: block; }
+  .admin-side { display: none; }
+  .admin-mobilebar { display: flex; background: var(--btb-charcoal); padding: .6rem .75rem; gap: .25rem; overflow-x: auto; position: sticky; top: 0; z-index: 20; }
+  .admin-mobilebar a, .admin-mobilebar button { flex: none; color: rgba(255, 255, 255, .85); background: none; border: 0; text-decoration: none; padding: .55rem .8rem; border-radius: .5rem; font-weight: 500; font-size: .92rem; }
+  .admin-mobilebar a[aria-current="page"] { background: rgba(255, 255, 255, .18); color: #fff; }
+}
+.stat-card { background: #fff; border-radius: var(--btb-radius-sm); padding: 1.1rem 1.25rem; box-shadow: var(--btb-shadow-sm); border: 1px solid var(--btb-line); height: 100%; }
+.stat-card strong { display: block; font-family: var(--btb-font-head); font-size: 2rem; color: var(--btb-charcoal); line-height: 1.1; }
+.stat-card span { color: var(--btb-muted); font-size: .92rem; }
+.admin-card { background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius-sm); box-shadow: var(--btb-shadow-sm); padding: 1.25rem; }
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.25rem; background: linear-gradient(180deg, #fcf9ff, #f1e4ff); }
+.login-card { width: 100%; max-width: 26rem; }
+
+/* 9. Admin tables / forms ------------------------------------------------------------- */
+.table-admin { width: 100%; }
+.table-admin th { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--btb-muted); font-weight: 700; white-space: nowrap; }
+.table-admin td { vertical-align: middle; }
+.row-thumb { width: 5.5rem; border-radius: .5rem; overflow: hidden; }
+.row-thumb .thumb-ph { font-size: 1.25rem; }
+.badge-status { display: inline-block; padding: .2rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; }
+.badge-status.is-published { background: #e7f6ec; color: #14532d; }
+.badge-status.is-draft { background: #fff4d6; color: #6b4a00; }
+.row-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.btn-xs { font-size: .85rem; padding: .3rem .7rem; border-radius: .5rem; }
+.req::after { content: " *"; color: #b42318; }
+.form-text-count { float: right; font-size: .8rem; color: var(--btb-muted); }
+.upload-progress { height: .9rem; border-radius: 999px; }
+.thumb-preview { width: 12rem; max-width: 100%; border-radius: .6rem; overflow: hidden; margin-top: .5rem; }
+.sticky-actions { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--btb-line); margin: 1.5rem -1.25rem -1.25rem; padding: .9rem 1.25rem; border-radius: 0 0 var(--btb-radius-sm) var(--btb-radius-sm); display: flex; flex-wrap: wrap; gap: .6rem; }
+.order-btns { display: inline-flex; gap: .2rem; }
+.toast-area { position: fixed; right: 1rem; bottom: 1rem; z-index: 2000; display: grid; gap: .5rem; max-width: calc(100vw - 2rem); }
+.toast-msg { background: #fff; border-left: 4px solid var(--btb-purple-deep); box-shadow: var(--btb-shadow-lg); border-radius: .5rem; padding: .75rem 1rem; max-width: 24rem; }
+.toast-msg.is-ok { border-color: #1a7f45; }
+.toast-msg.is-error { border-color: #b42318; }
+.admin-body .form-control:focus, .admin-body .form-select:focus { border-color: var(--btb-purple); box-shadow: 0 0 0 .25rem rgba(168, 85, 247, .2); }
+.btn-danger-btb { background: #b42318; border-color: #b42318; color: #fff; }
+.btn-danger-btb:hover { background: #8f1b12; border-color: #8f1b12; color: #fff; }
+@media (max-width: 767.98px) {
+  .table-responsive-stack thead { display: none; }
+  .table-responsive-stack tr { display: block; border-bottom: 1px solid var(--btb-line); padding: .75rem 0; }
+  .table-responsive-stack td { display: block; border: 0; padding: .2rem 0; }
+}
+
+/* ---- Student accounts, pricing, payments ---- */
+.course-price { font-family: var(--btb-font-head); font-size: 1.6rem; font-weight: 800; color: var(--btb-charcoal); margin-bottom: 1rem; }
+.price-tag { font-weight: 700; color: var(--btb-purple-deep); }
+.player-msg .bi-lock-fill { font-size: 2.2rem; color: var(--btb-gold); margin-bottom: .75rem; }
+.auth-tabs { display: flex; gap: .25rem; background: var(--btb-lavender-soft); border-radius: 999px; padding: .25rem; margin-bottom: 1.25rem; }
+.auth-tabs button { flex: 1; border: 0; background: transparent; border-radius: 999px; padding: .55rem .75rem; font-weight: 700; color: var(--btb-muted); }
+.auth-tabs button.is-active { background: #fff; color: var(--btb-charcoal); box-shadow: var(--btb-shadow-sm); }
+.pay-status { display: inline-block; padding: .2rem .65rem; border-radius: 999px; font-size: .78rem; font-weight: 700; background: #eee; color: #444; }
+.pay-status.is-paid { background: #e7f6ec; color: #14532d; }
+.pay-status.is-pending, .pay-status.is-created { background: #fff4d6; color: #6b4a00; }
+.pay-status.is-failed, .pay-status.is-cancelled { background: #fdecea; color: #7a1c13; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.admin-note { white-space: pre-wrap; }
+
+/* ---- Header fit: the extra "Student Login" link must not crowd the logo or push the WhatsApp button off-screen ---- */
+@media (min-width: 992px) {
+  .site-header .navbar > .container { flex-wrap: nowrap; }
+  .site-header .brand { flex-shrink: 0; margin-right: 1rem; }
+  .site-header .brand-name { font-size: .88rem; white-space: nowrap; }
+  .site-header .navbar-collapse { min-width: 0; }
+  .site-header .navbar-nav { gap: .85rem; }
+  .site-header .nav-link { white-space: nowrap; font-size: .95rem; }
+  .site-header .btn-btb.btn-sm-btb { white-space: nowrap; }
+}
+@media (min-width: 992px) and (max-width: 1399.98px) {
+  /* not enough room for the long WhatsApp label: use the round icon button instead */
+  .site-header .btn-btb.btn-sm-btb.d-lg-inline-flex { display: none !important; }
+  .site-header .header-wa-icon.d-lg-none { display: inline-flex !important; }
+}
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .site-header .navbar-nav { gap: .5rem; }
+  .site-header .nav-link { font-size: .84rem; }
+  .site-header .brand-sub { display: none; }
+  .site-header .brand-name { font-size: .8rem; }
+  .site-header .brand img { height: 2.6rem; }
+}
+@media (min-width: 992px) and (max-width: 1399.98px) { .site-header .header-wa-icon.d-lg-none { margin-left: .6rem; } }
+
+/* ---- Policy / FAQ / static content pages ---- */
+.prose { max-width: 50rem; line-height: 1.7; }
+.prose h2 { font-size: 1.25rem; margin: 2rem 0 .6rem; }
+.prose ul, .prose ol { padding-left: 1.25rem; }
+.prose li { margin-bottom: .4rem; }
+.draft-note { background: #fff8e1; border: 1px solid #e8c95a; border-left-width: 4px; border-radius: var(--btb-radius-sm); padding: .85rem 1rem; margin-bottom: 1.5rem; font-size: .95rem; }
+.faq-wrap { max-width: 50rem; }
+.footer-legal { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; }
+
+/* ---- Course purchase card (price, batch choice, what you get) ---- */
+.buy-card { background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius); box-shadow: var(--btb-shadow); overflow: hidden; }
+@media (min-width: 992px) { .buy-card { position: sticky; top: 6.5rem; } }
+.buy-card .course-hero-img { border-radius: 0; box-shadow: none; }
+.buy-card-body { padding: 1.25rem 1.25rem 1.4rem; }
+.price-block { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem .75rem; margin-bottom: .25rem; }
+.price-now { font-family: var(--btb-font-head); font-size: 2rem; font-weight: 800; color: var(--btb-charcoal); line-height: 1.1; }
+.price-was { color: var(--btb-muted); font-size: 1.05rem; }
+.price-off { background: #e3f6ea; color: #0e6e3a; font-weight: 700; font-size: .8rem; padding: .2rem .55rem; border-radius: 999px; }
+.price-note { color: var(--btb-muted); font-size: .9rem; margin-bottom: 1rem; }
+.batch-pick { border: 0; padding: 0; margin: 1rem 0; }
+.batch-pick legend { font-size: .95rem; font-weight: 700; margin-bottom: .5rem; float: none; width: auto; padding: 0; }
+.batch-opt { display: flex; align-items: center; gap: .6rem; padding: .65rem .8rem; border: 1px solid var(--btb-line); border-radius: var(--btb-radius-sm); margin-bottom: .5rem; cursor: pointer; }
+.batch-opt:has(input:checked) { border-color: var(--btb-purple-deep); background: #f6f0ff; }
+.perk-list { list-style: none; padding: 0; margin: 1.25rem 0 0; display: grid; gap: .6rem; }
+.perk-list li { display: flex; gap: .6rem; align-items: flex-start; font-size: .95rem; }
+.perk-list i { color: var(--btb-purple-deep); margin-top: .15rem; }
+.level-badge--live { background: #fde8e8; color: #a31d1d; }

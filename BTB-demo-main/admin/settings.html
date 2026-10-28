@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Settings | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="settings">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><h1>Settings</h1></div>
+      <div class="row g-3">
+        <div class="col-lg-6"><section class="admin-card h-100" aria-labelledby="pwTitle"><h2 class="h5" id="pwTitle">Change password</h2><p class="text-muted">Signed in as <strong id="acctEmail"></strong></p>
+          <form id="pwForm" novalidate>
+            <div class="mb-3"><label class="form-label" for="pw">New password</label><input class="form-control" id="pw" name="pw" type="password" minlength="8" autocomplete="new-password" required><div class="invalid-feedback">Use at least 8 characters.</div></div>
+            <div class="mb-3"><label class="form-label" for="pw2">Repeat new password</label><input class="form-control" id="pw2" name="pw2" type="password" autocomplete="new-password" required><div class="invalid-feedback">Passwords must match.</div></div>
+            <button class="btn-btb btn-sm-btb" type="submit">Change password</button><div id="pwMsg" class="form-status" role="status" aria-live="polite"></div>
+          </form></section></div>
+        <div class="col-lg-6"><section class="admin-card h-100" aria-labelledby="cfgTitle"><h2 class="h5" id="cfgTitle">Connection and limits</h2>
+          <dl class="mb-0"><dt>Supabase project</dt><dd id="cfgUrl" class="text-break"></dd><dt>Max video size</dt><dd id="cfgVideo"></dd><dt>Max thumbnail size</dt><dd id="cfgThumb"></dd></dl>
+          <p class="text-muted small mb-0">Limits are set in <code>assets/js/config.js</code> and must match your Supabase plan and bucket settings.</p></section></div>
+      </div>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>

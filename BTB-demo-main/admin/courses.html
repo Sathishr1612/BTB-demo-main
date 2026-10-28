@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Courses | BTB Admin</title>
+  <link rel="icon" type="image/png" href="../assets/images/favicon.png">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap/bootstrap.min.css">
+  <link rel="stylesheet" href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body class="admin-body" data-page="courses">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <div class="admin-mobilebar" id="adminMobile"></div>
+  <div class="admin-layout">
+    <aside class="admin-side" id="adminSide" aria-label="Admin sidebar"></aside>
+    <main class="admin-main" id="main" hidden>
+      <div class="admin-top"><h1>Courses</h1><button class="btn-btb btn-sm-btb" type="button" id="addCourse"><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Course</button></div>
+      <div id="courseList" aria-live="polite"></div>
+      <div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="courseModalTitle" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable modal-lg"><form class="modal-content" id="courseForm" novalidate>
+        <div class="modal-header"><h2 class="modal-title h5" id="courseModalTitle">Add course</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+        <div class="modal-body"><div class="row g-3">
+          <div class="col-12"><label class="form-label req" for="cTitle">Title</label><input class="form-control" id="cTitle" name="title" maxlength="120" required><div class="invalid-feedback">Enter a title.</div></div>
+          <div class="col-12"><label class="form-label" for="cDesc">Description</label><textarea class="form-control" id="cDesc" name="description" rows="3" maxlength="4000"></textarea></div>
+          <div class="col-12"><label class="form-label" for="cObj">Learning objectives <span class="text-muted">(one per line)</span></label><textarea class="form-control" id="cObj" name="objectives" rows="4" maxlength="4000"></textarea></div>
+          <div class="col-md-6"><label class="form-label" for="cLevel">Level</label><select class="form-select" id="cLevel" name="level"><option value="">Not set</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>All levels</option></select></div>
+          <div class="col-md-6"><label class="form-label" for="cPrice">Price (&#8377; INR)</label><input class="form-control" id="cPrice" name="price" type="number" inputmode="decimal" min="0" max="1000000" step="0.01" value="0" required><div class="form-text">Enter 0 for a free course. Students must pay this amount to unlock the lessons.</div><div class="invalid-feedback">Enter a price between 0 and 1,000,000.</div></div>
+          <div class="col-md-6"><label class="form-label" for="cCompare">Original price (&#8377;) <span class="text-muted">(optional)</span></label><input class="form-control" id="cCompare" name="compare" type="number" inputmode="decimal" min="0" max="1000000" step="0.01"><div class="form-text">Shown crossed out beside the price, with the discount %. Must be higher than the price. Leave empty for no discount.</div></div>
+          <div class="col-md-6"><label class="form-label" for="cTax">Line under the price <span class="text-muted">(optional)</span></label><input class="form-control" id="cTax" name="taxnote" maxlength="120" placeholder="e.g. Inclusive of all taxes"><div class="form-text">Shown only if filled in. Write only what is true for the academy.</div></div>
+          <div class="col-md-6"><label class="form-label" for="cDelivery">Type</label><select class="form-select" id="cDelivery" name="delivery"><option value="recorded">Recorded (video lessons)</option><option value="live">Live classes</option></select></div>
+          <div class="col-md-6"><label class="form-label" for="cDuration">Duration <span class="text-muted">(optional)</span></label><input class="form-control" id="cDuration" name="duration" maxlength="60" placeholder="e.g. 2 months"></div>
+          <div class="col-12"><label class="form-label" for="cBatches">Batch times <span class="text-muted">(one per line, optional)</span></label><textarea class="form-control" id="cBatches" name="batches" rows="3" maxlength="1000" placeholder="Morning batch - 7:00 AM&#10;Evening batch - 8:00 PM"></textarea><div class="form-text">For live courses. The student must pick one before paying, and you see their choice under Orders.</div></div>
+          <div class="col-12"><label class="form-label" for="cHighlights">What the student gets <span class="text-muted">(one per line, optional)</span></label><textarea class="form-control" id="cHighlights" name="highlights" rows="3" maxlength="2000"></textarea><div class="form-text">Shown as a checklist next to the price.</div></div>
+          <div class="col-md-6"><label class="form-label" for="cStatus">Status</label><select class="form-select" id="cStatus" name="status"><option value="draft">Draft (hidden)</option><option value="published">Published (visible)</option></select></div>
+          <div class="col-12"><label class="form-label" for="cThumb">Thumbnail</label><input class="form-control" id="cThumb" name="thumb" type="file" accept="image/jpeg,image/png,image/webp"><div class="form-text">JPG, PNG or WebP, up to 2 MB.</div><div class="small" id="cThumbInfo" aria-live="polite"></div><div class="thumb-preview" id="cThumbPreview" hidden></div></div>
+        </div><div class="alert alert-danger mt-3 mb-0" id="courseError" role="alert" hidden></div></div>
+        <div class="modal-footer"><button type="button" class="btn-btb-outline btn-sm-btb" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn-btb btn-sm-btb" id="courseSave">Save course</button></div>
+      </form></div></div>
+    </main>
+  </div>
+  <script src="../assets/vendor/bootstrap/bootstrap.bundle.min.js"></script>
+  <script src="../assets/vendor/supabase/supabase.js"></script>
+  <script src="../assets/js/config.js"></script>
+  <script src="../assets/js/btb-core.js"></script>
+  <script src="../assets/js/admin-core.js"></script>
+  <script src="../assets/js/admin-pages.js"></script>
+</body>
+</html>
