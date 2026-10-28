@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="A calendar of daily practice with a rising line">
+<defs><linearGradient id="a" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#f3e8ff"/><stop offset="1" stop-color="#e2c6ff"/></linearGradient></defs>
+<rect width="1200" height="750" fill="url(#a)"/>
+<circle cx="1050" cy="640" r="250" fill="#a855f7" opacity=".15"/><circle cx="120" cy="90" r="180" fill="#d4af37" opacity=".2"/>
+<rect x="230" y="130" width="740" height="500" rx="36" fill="#fff" stroke="#25124a" stroke-width="6"/>
+<path d="M230 166a36 36 0 0 1 36-36h668a36 36 0 0 1 36 36v70H230z" fill="#25124a"/>
+<rect x="330" y="100" width="22" height="70" rx="11" fill="#d4af37"/><rect x="848" y="100" width="22" height="70" rx="11" fill="#d4af37"/>
+<text x="600" y="206" font-family="Georgia,serif" font-size="44" fill="#fff" text-anchor="middle">30 days of speaking</text>
+<g fill="#f3e8ff"><rect x="280" y="270" width="90" height="70" rx="14"/><rect x="390" y="270" width="90" height="70" rx="14"/><rect x="500" y="270" width="90" height="70" rx="14"/><rect x="610" y="270" width="90" height="70" rx="14"/><rect x="720" y="270" width="90" height="70" rx="14"/><rect x="830" y="270" width="90" height="70" rx="14"/>
+<rect x="280" y="360" width="90" height="70" rx="14"/><rect x="390" y="360" width="90" height="70" rx="14"/><rect x="500" y="360" width="90" height="70" rx="14"/></g>
+<g fill="#7e22ce"><rect x="610" y="360" width="90" height="70" rx="14"/><rect x="720" y="360" width="90" height="70" rx="14"/><rect x="830" y="360" width="90" height="70" rx="14"/></g>
+<g stroke="#fff" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M635 396l14 14 28-30"/><path d="M745 396l14 14 28-30"/><path d="M855 396l14 14 28-30"/></g>
+<polyline points="290,590 420,540 540,560 680,490 800,500 930,440" fill="none" stroke="#d4af37" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="930" cy="440" r="18" fill="#d4af37"/>
+<text x="600" y="708" font-family="Segoe UI,Arial,sans-serif" font-size="30" letter-spacing="8" fill="#25124a" text-anchor="middle">LEARN IT. PRACTISE IT. SPEAK IT.</text>
+</svg>

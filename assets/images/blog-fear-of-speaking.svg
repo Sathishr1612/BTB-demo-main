@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" role="img" aria-label="A speech bubble breaking free from a chain">
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#25124a"/><stop offset="1" stop-color="#7e22ce"/></linearGradient>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1d77a"/><stop offset="1" stop-color="#d4af37"/></linearGradient></defs>
+<rect width="1200" height="750" fill="url(#a)"/>
+<circle cx="1020" cy="120" r="260" fill="#c77dff" opacity=".18"/><circle cx="130" cy="680" r="220" fill="#d4af37" opacity=".14"/>
+<g fill="none" stroke="#ffffff" stroke-opacity=".12" stroke-width="2"><circle cx="600" cy="375" r="300"/><circle cx="600" cy="375" r="400"/></g>
+<path d="M330 190h430a50 50 0 0 1 50 50v190a50 50 0 0 1-50 50H560l-110 90v-90h-120a50 50 0 0 1-50-50V240a50 50 0 0 1 50-50z" fill="#fff"/>
+<text x="545" y="365" font-family="Georgia,serif" font-size="120" font-weight="700" fill="#25124a" text-anchor="middle">Hello!</text>
+<g fill="none" stroke="url(#g)" stroke-width="16"><rect x="800" y="420" width="120" height="64" rx="32" transform="rotate(-25 860 452)"/><rect x="880" y="470" width="120" height="64" rx="32" transform="rotate(-25 940 502)" stroke-dasharray="150 60"/></g>
+<g fill="#d4af37"><path d="M930 330l12 28 30 4-22 21 6 30-26-15-26 15 6-30-22-21 30-4z"/><circle cx="1010" cy="260" r="10"/><circle cx="980" cy="610" r="8"/><circle cx="260" cy="560" r="12"/></g>
+<text x="80" y="690" font-family="Segoe UI,Arial,sans-serif" font-size="34" letter-spacing="8" fill="#fff" fill-opacity=".8">BREAK THE BARRIERS</text>
+</svg>

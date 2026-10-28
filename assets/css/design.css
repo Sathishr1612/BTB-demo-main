@@ -1,0 +1,84 @@
+/* Break the Barriers Academy: header + light polish layer. Loaded after app.css.
+   Header is white with the logo on a deep-purple badge (the logo's white lettering needs a dark ground). */
+
+html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+
+/* ================= HEADER ================= */
+.site-header {
+  background: #fff !important; border: 0 !important; animation: none !important; padding: 0;
+  box-shadow: 0 1px 0 #ece4f5 !important; transition: box-shadow .3s;
+}
+.site-header.is-scrolled { box-shadow: 0 6px 22px rgba(37, 18, 74, .1) !important; }
+.site-header .navbar { min-height: 0 !important; padding: .7rem 0 !important; }
+.site-header .navbar > .container { flex-wrap: wrap; align-items: center; }
+
+/* brand: dark badge holds the logo, text sits on white */
+.brand { gap: .85rem; margin-right: 1.25rem; color: #25124a; }
+.brand:hover { color: #25124a; }
+.brand img, .site-header.is-scrolled .brand img {
+  height: 3.1rem; width: auto; background: #25124a; border-radius: .85rem; padding: .3rem .55rem; transition: none;
+}
+.brand-name { color: #25124a; font-size: 1.05rem; font-weight: 800; letter-spacing: .04em; }
+.brand-sub { color: #a07d12; font-size: .68rem; font-weight: 600; letter-spacing: .34em; }
+
+/* menu */
+.site-header .navbar-nav { gap: .1rem; }
+.site-header .nav-link {
+  position: relative; padding: .55rem .9rem; border-radius: .5rem; border: 0;
+  font-size: .96rem; font-weight: 600; color: #3b3548; white-space: nowrap; transition: color .2s, background .2s;
+}
+.site-header .nav-link::after {
+  content: ""; display: block !important; position: absolute; left: .9rem; right: .9rem; bottom: .2rem; height: 2px; border-radius: 2px;
+  background: #7e22ce; transform: scaleX(0); transform-origin: left; transition: transform .25s ease;
+}
+.site-header .nav-link:hover { color: #7e22ce; background: #f6effd; }
+.site-header .nav-link:hover::after { transform: scaleX(1); }
+.site-header .nav-link.active, .site-header .nav-link[aria-current="page"] { color: #7e22ce; background: transparent; box-shadow: none; }
+.site-header .nav-link.active::after, .site-header .nav-link[aria-current="page"]::after { transform: scaleX(1); }
+
+/* Student Login / My Courses: a plain solid button */
+.site-header .nav-item:last-child .nav-link {
+  margin-left: .75rem; padding: .6rem 1.25rem; color: #fff; background: #25124a; border-radius: .6rem;
+  box-shadow: none; transition: background .2s;
+}
+.site-header .nav-item:last-child .nav-link::after { display: none !important; }
+.site-header .nav-item:last-child .nav-link:hover { background: #7e22ce; color: #fff; transform: none; }
+.site-header .nav-item:last-child .nav-link[aria-current="page"] { background: #7e22ce; color: #fff; }
+
+.navbar-toggler { border: 1px solid #d9cbe9; border-radius: .6rem; padding: .45rem .7rem; background: #fff; }
+.navbar-toggler:focus { box-shadow: 0 0 0 3px rgba(126, 34, 206, .25); }
+.navbar-toggler-icon { filter: invert(1) brightness(.2); }
+
+@media (max-width: 1199.98px) and (min-width: 992px) {
+  .brand-sub { display: none; }
+  .brand-name { font-size: .88rem; }
+  .brand img, .site-header.is-scrolled .brand img { height: 2.7rem; }
+  .site-header .nav-link { padding: .5rem .55rem; font-size: .84rem; }
+  .site-header .nav-link::after { left: .55rem; right: .55rem; }
+  .site-header .nav-item:last-child .nav-link { padding: .5rem .9rem; margin-left: .3rem; }
+}
+@media (max-width: 991.98px) {
+  .site-header .navbar { padding: .55rem 0 !important; }
+  .brand img, .site-header.is-scrolled .brand img { height: 2.6rem; }
+  .brand-name { font-size: .88rem; }
+  .site-header .navbar-collapse { flex-basis: 100%; margin-top: .6rem; padding: .4rem 0 .7rem; border-top: 1px solid #ece4f5; }
+  .site-header .navbar-nav { gap: 0; }
+  .site-header .nav-link { padding: .85rem .25rem; border-radius: 0; border-bottom: 1px solid #f1eaf8; font-size: 1rem; }
+  .site-header .nav-link::after { display: none !important; }
+  .site-header .nav-link:hover { background: transparent; }
+  .site-header .nav-item:last-child .nav-link { margin: .8rem 0 0; text-align: center; border-bottom: 0; }
+}
+@media (max-width: 359.98px) { .brand-text { display: none; } }
+
+/* ================= HERO: back to calm, static headline ================= */
+.hero h1 span { background: linear-gradient(transparent 80%, rgba(212, 175, 55, .55) 80%); color: var(--btb-purple-deep); -webkit-text-fill-color: currentColor; animation: none; }
+.hero h1 span::after { display: none; }
+
+/* ================= SMALL POLISH (hover only, no looping motion) ================= */
+.benefit-card, .course-card, .quote-card, .blog-card, .video-card { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
+.blog-card > a { overflow: hidden; display: block; }
+.blog-card img { transition: transform .6s ease; }
+.blog-card:hover img { transform: scale(1.04); }
+.footer-links a { transition: color .2s; }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
