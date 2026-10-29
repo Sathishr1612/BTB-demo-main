@@ -82,3 +82,67 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 .footer-links a { transition: color .2s; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* ================= STAT STRIP: icon + number + label ================= */
+.stat-list { padding: .75rem; border: 0; border-top: 0; border-radius: 1.4rem; box-shadow: 0 22px 55px rgba(76, 29, 149, .16), 0 0 0 1px #ece4f5; position: relative; }
+.stat-list::before { content: ""; position: absolute; left: 2rem; right: 2rem; top: 0; height: 4px; border-radius: 0 0 4px 4px; background: linear-gradient(90deg, #7e22ce, #c77dff, #d4af37); }
+.stat-list li { display: flex; align-items: center; justify-content: center; gap: .95rem; padding: 1.1rem 1rem; text-align: left; border-radius: 1rem; transition: background .25s; }
+.stat-list li:hover { background: #f8f1ff; }
+.stat-list li + li { border-left: 1px solid #efe7f8; }
+.stat-icon { flex: 0 0 auto; display: grid; place-items: center; width: 3.1rem; height: 3.1rem; border-radius: 50%; background: linear-gradient(135deg, #7e22ce, #a855f7); color: #fff; font-size: 1.35rem; box-shadow: 0 8px 18px rgba(126, 34, 206, .3); }
+.stat-text { min-width: 0; }
+.stat-list .stat-text strong { display: block; font-size: clamp(1.15rem, 2vw, 1.55rem); line-height: 1.15; color: #25124a; background: none; -webkit-text-fill-color: currentColor; }
+.stat-list .stat-text span { display: block; margin-top: .15rem; font-size: .86rem; color: #6b6577; }
+@media (max-width: 991.98px) { .stat-list li { flex-direction: column; text-align: center; gap: .6rem; } }
+@media (max-width: 767.98px) {
+  .stat-list { padding: .5rem; }
+  .stat-list li { padding: 1rem .5rem; }
+  .stat-icon { width: 2.6rem; height: 2.6rem; font-size: 1.15rem; }
+  .stat-list li:nth-child(3) { border-left: 0; }
+  .stat-list li:nth-child(n+3) { border-top: 1px solid #efe7f8; }
+}
+.stat-list .stat-icon { color: #fff; font-size: 1.35rem; }
+.stat-list .stat-icon i { color: #fff; line-height: 1; }
+@media (max-width: 767.98px) { .stat-list .stat-icon { font-size: 1.15rem; } }
+
+/* ================= MOBILE POLISH: buttons, spacing, tap targets ================= */
+@media (max-width: 575.98px) {
+  /* every button is an easy thumb target */
+  .btn-btb, .btn-btb-ghost, .btn-btb-outline { min-height: 3rem; font-size: .98rem; padding: .7rem 1.25rem; text-align: center; }
+  .btn-sm-btb { min-height: 2.75rem; font-size: .92rem; }
+
+  /* paired buttons under course lists: full width, stacked, equal size */
+  .featured-more { display: flex; flex-direction: column; gap: .75rem; max-width: 22rem; margin-left: auto; margin-right: auto; }
+  .featured-more .btn-btb, .featured-more .btn-btb-outline { width: 100%; }
+
+  /* plan-card buttons: allow a second line instead of overflowing small screens */
+  .course-card .btn-block-btb { white-space: normal; line-height: 1.25; min-height: 3.2rem; font-size: .93rem; }
+
+  /* call-to-action rows stack neatly */
+  .hero-actions, .live-actions { gap: .7rem; }
+  .cta-band .hero-actions .btn-btb, .cta-copy .hero-actions .btn-btb, .cta-copy .hero-actions .btn-btb-ghost { width: 100%; }
+
+  /* tighter, calmer section rhythm */
+  .section { padding-top: 2.75rem; padding-bottom: 2.75rem; }
+  .section-head { margin-bottom: 1.75rem; }
+  .section-head h2 { font-size: 1.6rem; }
+
+  /* class-detail tiles: a touch bigger text so labels stay readable */
+  .info-label { font-size: .7rem; }
+  .info-value { font-size: 1.05rem; }
+
+  /* keep content clear of the floating WhatsApp button */
+  .wa-float { right: 1rem; bottom: 1rem; width: 3.4rem; height: 3.4rem; }
+}
+@media (max-width: 380px) {
+  .btn-btb, .btn-btb-ghost, .btn-btb-outline { font-size: .92rem; padding-left: 1rem; padding-right: 1rem; }
+  .container { padding-left: 1rem; padding-right: 1rem; }
+}
+
+/* Stat strip: simpler, calmer look (no gradient bar, no glowing icons) */
+.stat-list::before { display: none; }
+.stat-list { border-radius: 1rem; box-shadow: 0 10px 30px rgba(37, 18, 74, .08); border: 1px solid #ece4f5; }
+.stat-list li:hover { background: transparent; }
+.stat-icon { background: #f3e8ff; box-shadow: none; width: 2.9rem; height: 2.9rem; }
+.stat-list .stat-icon, .stat-list .stat-icon i { color: #7e22ce; }
+.stat-list .stat-text strong { font-size: clamp(1.1rem, 1.9vw, 1.4rem); }
