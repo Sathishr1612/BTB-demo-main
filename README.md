@@ -127,3 +127,13 @@ Titles, descriptions, canonical and social tags are in every page. Course and le
 * WhatsApp number (+91 93600 46012) comes from the supplied posters; change it in `assets/js/config.js` and in the `wa.me` links (search `919360046012`).
 * The home page's three pricing plans (Batch / Cluster / Personal) are still static content from the original site; the new "Featured courses" section above them is dynamic. Prices/plans are not stored in Supabase.
 * Spelling: one poster says "Break the Barrier Academy"; the site uses "Break the Barriers Academy".
+
+## Ebook sales and payment statistics (09_ebook_sales.sql)
+Run `supabase/09_ebook_sales.sql` (after 01-05 and 07), then redeploy `create-order`:
+`supabase functions deploy create-order`. `verify-payment` and `razorpay-webhook` are unchanged: they only call `fulfill_order()`, which now grants a course enrolment **or** an ebook purchase.
+* `ebooks.price_paise` (0 = free). A paid ebook must be an uploaded file; the admin form refuses paid ebooks with an external link.
+* `ebooks.html` lists published ebooks (view `ebooks_public`, which never exposes the file path of a paid ebook). Buying uses the same Razorpay flow as courses.
+* Downloads: private bucket `ebook-files`; the storage policy lets only admins, buyers, and anyone for FREE published ebooks create a 5-minute signed link. "My ebooks" is in `account.html` (function `my_ebooks()`).
+* Admin Dashboard and Orders numbers come from `admin_payment_stats()` (verified `captured` payments), not from browser sums. The orders table lists the latest 1000 orders.
+* An ebook (or course) that has paid orders cannot be deleted (foreign key RESTRICT); unpublish it instead.
+* Not built: refunds in the UI, invoices, a "my ebooks" email, ebook bundles.

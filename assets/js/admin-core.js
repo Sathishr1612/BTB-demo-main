@@ -45,7 +45,7 @@
       return '<li><a href="' + n[0] + '"' + (n[3] === current ? ' aria-current="page"' : "") + '><i class="bi bi-' + n[2] + '" aria-hidden="true"></i>' + n[1] + "</a></li>";
     }).join("");
     B.$("#adminSide").innerHTML =
-      '<a class="admin-brand" href="index.html"><img src="../assets/images/btb-logo.png" alt="" width="60" height="38"><span>BTB Admin<small>Speak Beyond Limits.</small></span></a>' +
+      '<a class="admin-brand" href="index.html"><img src="../assets/images/btb-logo.svg" alt="" width="40" height="40"><span>BTB Admin<small>Speak Beyond Limits.</small></span></a>' +
       '<nav aria-label="Admin"><ul class="admin-nav">' + links + '<li><button type="button" data-logout><i class="bi bi-box-arrow-right" aria-hidden="true"></i>Logout</button></li></ul></nav>';
     B.$("#adminMobile").innerHTML = A.NAV.map(function (n) {
       return '<a href="' + n[0] + '"' + (n[3] === current ? ' aria-current="page"' : "") + ">" + n[1] + "</a>";

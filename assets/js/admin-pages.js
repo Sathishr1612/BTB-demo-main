@@ -41,11 +41,11 @@
       try {
         var r = await Promise.all([count("courses"), count("modules"), count("videos"), count("videos", "published"), count("ebooks"),
           B.db.from("bookings").select("id", { count: "exact", head: true }).eq("status", "new"),
-          B.db.from("orders").select("amount_paise").eq("status", "paid").limit(5000)]);
+          B.db.rpc("admin_payment_stats")]);
         r.forEach(function (x) { if (x.error) { throw x.error; } });
-        var revenue = r[6].data.reduce(function (t, o) { return t + o.amount_paise; }, 0);
+        var st = r[6].data || {}, revenue = st.revenue_paise || 0;
         var items = [["Total courses", r[0].count], ["Total modules", r[1].count], ["Total videos", r[2].count], ["Published videos", r[3].count],
-          ["Ebooks", r[4].count], ["New booking requests", r[5].count], ["Paid orders", r[6].data.length], ["Verified revenue", "\u20B9" + (revenue / 100).toLocaleString("en-IN")]];
+          ["Ebooks", r[4].count], ["New booking requests", r[5].count], ["Paid orders", st.orders_paid || 0], ["Pending payments", st.orders_pending || 0], ["Failed payments", st.orders_failed || 0], ["Ebook sales", st.ebook_sales || 0], ["Verified revenue", "\u20B9" + (revenue / 100).toLocaleString("en-IN")]];
         cards.innerHTML = '<div class="row g-3">' + items.map(function (i) {
           return '<div class="col-6 col-xl-3"><div class="stat-card"><strong>' + i[1] + "</strong><span>" + i[0] + "</span></div></div>";
         }).join("") + "</div>";
@@ -499,9 +499,9 @@
     };
     var render = function () {
       if (!ebooks.length) { B.showEmpty(box, "book", "No ebooks yet", "Add your first ebook.", '<button type="button" class="btn-btb btn-sm-btb" data-add>Add Ebook</button>'); return; }
-      box.innerHTML = '<div class="admin-card p-0"><table class="table table-admin table-responsive-stack align-middle mb-0"><thead><tr><th scope="col">Cover</th><th scope="col">Title</th><th scope="col">Download</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead><tbody>' +
+      box.innerHTML = '<div class="admin-card p-0"><table class="table table-admin table-responsive-stack align-middle mb-0"><thead><tr><th scope="col">Cover</th><th scope="col">Title</th><th scope="col">Price</th><th scope="col">Download</th><th scope="col">Status</th><th scope="col">Actions</th></tr></thead><tbody>' +
         ebooks.map(function (b) {
-          return '<tr><td><div class="row-thumb">' + B.thumbHtml(b.cover_path, "") + "</div></td><td><strong>" + esc(b.title) + "</strong></td><td>" +
+          return '<tr><td><div class="row-thumb">' + B.thumbHtml(b.cover_path, "") + "</div></td><td><strong>" + esc(b.title) + "</strong></td><td>" + (b.price_paise ? "₹" + (b.price_paise / 100).toLocaleString("en-IN") : "Free") + "</td><td>" +
             (b.file_path ? "Uploaded file" : b.download_url ? "External link" : "-") + "</td><td>" + badge(b.status) +
             '</td><td><div class="row-actions"><button class="btn btn-outline-secondary btn-xs" data-edit="' + esc(b.id) + '">Edit</button>' +
             '<button class="btn btn-outline-secondary btn-xs" data-toggle="' + esc(b.id) + '">' + (b.status === "published" ? "Unpublish" : "Publish") + "</button>" +
@@ -514,7 +514,7 @@
       $("#eCoverInfo").textContent = ""; $("#eFileInfo").textContent = "";
       var prev = $("#eCoverPreview"); prev.hidden = !(b && b.cover_path); prev.innerHTML = b && b.cover_path ? B.thumbHtml(b.cover_path, "Current cover") : "";
       var cur = $("#eCurrentFile"); cur.hidden = !(b && b.file_path); cur.textContent = b && b.file_path ? "Current file: " + b.file_path.split("/").pop() + ". Choose a new file only to replace it." : "";
-      if (b) { f.elements.title.value = b.title; f.elements.description.value = b.description || ""; f.elements.url.value = b.download_url || ""; f.elements.status.value = b.status; }
+      if (b) { f.elements.title.value = b.title; f.elements.description.value = b.description || ""; f.elements.url.value = b.download_url || ""; f.elements.price.value = b.price_paise ? b.price_paise / 100 : 0; f.elements.status.value = b.status; }
       modal.show();
     };
     var pick = function (input, kind, info) {
@@ -536,6 +536,10 @@
       var cover = g.cover.files[0] || null, file = g.file.files[0] || null;
       var hasSource = !!(file || url || (editing && (editing.file_path || editing.download_url)));
       if (g.status.value === "published" && !hasSource) { setErr(err, "Add a file or a download link before publishing."); return; }
+      var priceR = parseFloat(g.price.value || "0"), priceP = Math.round(priceR * 100);
+      if (!(priceR >= 0) || (priceP > 0 && priceP < 100)) { setErr(err, "Enter a price of 0 (free) or at least ₹1."); return; }
+      if (priceP > 0 && url) { setErr(err, "A paid ebook cannot use an external link, because that link would be public. Upload the file instead and clear the link."); return; }
+      if (priceP > 0 && !(file || (editing && editing.file_path))) { setErr(err, "A paid ebook needs an uploaded PDF or EPUB so it can stay private."); return; }
       saving = true; saveBtn.disabled = true; saveBtn.textContent = "Saving..."; setErr(err, "");
       var id = editing ? editing.id : B.uuid(), newCover = "", newFile = "";
       try {
@@ -545,7 +549,7 @@
           prog.hidden = false; bar.style.width = "0%";
           await A.uploadResumable(C.ebookBucket, file, newFile, function (p) { bar.style.width = p + "%"; bar.setAttribute("aria-valuenow", p); progText.textContent = "Uploading file... " + p + "%"; }, ctl);
         }
-        var p = { title: g.title.value.trim(), description: g.description.value.trim() || null, download_url: url || null, status: g.status.value };
+        var p = { title: g.title.value.trim(), description: g.description.value.trim() || null, download_url: url || null, price_paise: priceP, status: g.status.value };
         if (newCover) { p.cover_path = newCover; }
         if (newFile) { p.file_path = newFile; }
         var res = editing ? await B.db.from("ebooks").update(p).eq("id", id).select() : await B.db.from("ebooks").insert(Object.assign({ id: id }, p)).select();
@@ -629,32 +633,36 @@
 
   /* ===== Orders & payments (read-only) ======================================== */
   async function initOrders() {
-    var box = $("#orderList"), statsEl = $("#orderStats"), fSearch = $("#oSearch"), fStatus = $("#oStatus"), orders = [], titles = {};
+    var box = $("#orderList"), statsEl = $("#orderStats"), fSearch = $("#oSearch"), fStatus = $("#oStatus"), orders = [], titles = {}, stats = null;
     var LABEL = { paid: "Paid", pending: "Awaiting confirmation", created: "Not completed", failed: "Failed", cancelled: "Cancelled" };
     var rupees = function (p) { return "₹" + (p / 100).toLocaleString("en-IN", { minimumFractionDigits: p % 100 ? 2 : 0 }); };
     var load = async function () {
       B.showLoading(box, "Loading orders...");
       try {
-        var r = await Promise.all([A.must(B.db.from("orders").select("*, payments(razorpay_payment_id,status,method,error_description)").order("created_at", { ascending: false }).limit(1000)), A.must(B.db.from("courses").select("id,title"))]);
-        orders = r[0]; r[1].forEach(function (c) { titles[c.id] = c.title; }); render();
+        var r = await Promise.all([A.must(B.db.from("orders").select("*, payments(razorpay_payment_id,status,method,error_description)").order("created_at", { ascending: false }).limit(1000)), A.must(B.db.from("courses").select("id,title")), A.must(B.db.from("ebooks").select("id,title")), B.db.rpc("admin_payment_stats")]);
+        orders = r[0]; r[1].concat(r[2]).forEach(function (c) { titles[c.id] = c.title; }); stats = r[3].error ? null : r[3].data; render();
       } catch (e) { B.showError(box, B.friendlyError(e), load); }
     };
     var render = function () {
-      var paid = orders.filter(function (o) { return o.status === "paid"; });
-      statsEl.innerHTML = '<div class="row g-3">' + [["Paid orders", paid.length], ["Verified revenue", rupees(paid.reduce(function (t, o) { return t + o.amount_paise; }, 0))],
-        ["Awaiting confirmation", orders.filter(function (o) { return o.status === "pending"; }).length], ["Failed / cancelled", orders.filter(function (o) { return o.status === "failed" || o.status === "cancelled"; }).length]]
-        .map(function (i) { return '<div class="col-6 col-xl-3"><div class="stat-card"><strong>' + i[1] + "</strong><span>" + i[0] + "</span></div></div>"; }).join("") + "</div>";
+      /* Numbers come from admin_payment_stats() (database, verified payments). The list below is only the latest 1000 orders. */
+      var st = stats || {}, money = function (p) { return rupees(p || 0); };
+      var tiles = stats
+        ? [["Total orders", st.orders_total], ["Successful payments", st.orders_paid], ["Pending payments", st.orders_pending], ["Failed payments", st.orders_failed],
+           ["Verified revenue", money(st.revenue_paise)], ["Course sales", st.course_sales + " · " + money(st.course_revenue_paise)], ["Ebook sales", st.ebook_sales + " · " + money(st.ebook_revenue_paise)],
+           ["Cancelled / not completed", (st.orders_cancelled || 0) + (st.orders_incomplete || 0)]]
+        : [["Statistics unavailable", "Run supabase/09_ebook_sales.sql"]];
+      statsEl.innerHTML = '<div class="row g-3">' + tiles.map(function (i) { return '<div class="col-6 col-xl-3"><div class="stat-card"><strong>' + esc(String(i[1])) + "</strong><span>" + esc(i[0]) + "</span></div></div>"; }).join("") + "</div>";
       var q = fSearch.value.trim().toLowerCase();
       var list = orders.filter(function (o) {
         return (!fStatus.value || o.status === fStatus.value) &&
-          (!q || ((o.student_email || "") + " " + (o.student_name || "") + " " + (titles[o.course_id] || "")).toLowerCase().indexOf(q) !== -1);
+          (!q || ((o.student_email || "") + " " + (o.student_name || "") + " " + (titles[o.course_id || o.ebook_id] || "")).toLowerCase().indexOf(q) !== -1);
       });
       if (!orders.length) { B.showEmpty(box, "credit-card", "No orders yet", "Orders appear here when a student starts checkout for a paid course."); return; }
       if (!list.length) { B.showEmpty(box, "search", "No orders match your filters", ""); return; }
-      box.innerHTML = '<div class="admin-card p-0"><table class="table table-admin table-responsive-stack align-middle mb-0"><thead><tr><th scope="col">Date</th><th scope="col">Student</th><th scope="col">Course</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Payment reference</th></tr></thead><tbody>' +
+      box.innerHTML = '<div class="admin-card p-0"><table class="table table-admin table-responsive-stack align-middle mb-0"><thead><tr><th scope="col">Date</th><th scope="col">Student</th><th scope="col">Item</th><th scope="col">Amount</th><th scope="col">Status</th><th scope="col">Payment reference</th></tr></thead><tbody>' +
         list.map(function (o) {
           var pay = (o.payments || []).slice().sort(function (a, b) { return (b.status === "captured") - (a.status === "captured"); })[0];
-          return "<tr><td>" + esc(new Date(o.created_at).toLocaleString()) + "</td><td>" + esc(o.student_name || "") + '<div class="small text-muted">' + esc(o.student_email || "-") + "</div></td><td>" + esc(titles[o.course_id] || "-") + (o.batch_choice ? '<div class="small text-muted">Batch: ' + esc(o.batch_choice) + "</div>" : "") + "</td><td>" + rupees(o.amount_paise) +
+          return "<tr><td>" + esc(new Date(o.created_at).toLocaleString()) + "</td><td>" + esc(o.student_name || "") + '<div class="small text-muted">' + esc(o.student_email || "-") + "</div></td><td>" + esc(titles[o.course_id || o.ebook_id] || "-") + (o.ebook_id ? '<div class="small text-muted">Ebook</div>' : "") + (o.batch_choice ? '<div class="small text-muted">Batch: ' + esc(o.batch_choice) + "</div>" : "") + "</td><td>" + rupees(o.amount_paise) +
             '</td><td><span class="pay-status is-' + esc(o.status) + '">' + esc(LABEL[o.status] || o.status) + "</span></td><td><small>" +
             (pay ? esc(pay.razorpay_payment_id) + (pay.method ? " (" + esc(pay.method) + ")" : "") + (pay.status === "failed" && pay.error_description ? "<br>" + esc(pay.error_description) : "") : esc(o.razorpay_order_id || "-")) + "</small></td></tr>";
         }).join("") + "</tbody></table></div>";

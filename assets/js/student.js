@@ -64,11 +64,18 @@
     return r.data;
   }
 
-  /* Start a purchase. Resolves {status:"paid"|"pending"|"failed"|"cancelled"}. Rejects with a readable Error. */
+  /* Short-lived signed link to a private ebook file. Storage policy only allows it for buyers, admins and FREE ebooks. */
+  S.ebookUrl = async function (path) {
+    var r = await B.db.storage.from(B.config.ebookBucket).createSignedUrl(path, 300, { download: true });
+    if (r.error || !r.data || !r.data.signedUrl) { throw r.error || new Error("Could not create the download link."); }
+    return r.data.signedUrl;
+  };
+
+  /* Start a purchase (opts.ebook = true when `course` is really an ebook). Resolves {status:"paid"|"pending"|"failed"|"cancelled"}. Rejects with a readable Error. */
   S.buy = async function (course, opts) {
     var u = await S.user();
     if (!u) { window.location.href = S.loginUrl(); return new Promise(function () { /* navigating */ }); }
-    var order = await call("create-order", { course_id: course.id, batch_time: (opts && opts.batch_time) || "" });
+    var order = await call("create-order", opts && opts.ebook ? { ebook_id: course.id } : { course_id: course.id, batch_time: (opts && opts.batch_time) || "" });
     await loadCheckout();
     return new Promise(function (resolve, reject) {
       var settled = false;

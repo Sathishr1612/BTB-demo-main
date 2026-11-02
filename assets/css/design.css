@@ -16,7 +16,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 .brand { gap: .85rem; margin-right: 1.25rem; color: #25124a; }
 .brand:hover { color: #25124a; }
 .brand img, .site-header.is-scrolled .brand img {
-  height: 3.6rem; width: auto; background: #25124a; border-radius: 1rem; padding: .22rem .4rem; transition: none;
+  height: 3.6rem; width: auto; background: none; border-radius: 1rem; padding: 0; transition: none;
 }
 .brand-name { color: #25124a; font-size: 1.05rem; font-weight: 800; letter-spacing: .04em; }
 .brand-sub { color: #a07d12; font-size: .68rem; font-weight: 600; letter-spacing: .34em; }

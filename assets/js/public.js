@@ -488,9 +488,13 @@
         var u = await S.user(); if (!u) { showAuth(); return; }
         var r = await Promise.all([
           must(B.db.from("enrollments").select("course_id,granted_at").eq("user_id", u.id)),
-          must(B.db.from("orders").select("id,course_id,amount_paise,status,created_at").eq("user_id", u.id).order("created_at", { ascending: false }))
+          must(B.db.from("orders").select("id,course_id,ebook_id,amount_paise,status,created_at").eq("user_id", u.id).order("created_at", { ascending: false })),
+          must(B.db.rpc("my_ebooks"))
         ]);
-        var ids = {}; r[0].concat(r[1]).forEach(function (x) { ids[x.course_id] = true; });
+        var myBooks = r[2], ebTitle = {}; myBooks.forEach(function (b) { ebTitle[b.id] = b.title; });
+        var needTitles = r[1].filter(function (o) { return o.ebook_id && !ebTitle[o.ebook_id]; }).map(function (o) { return o.ebook_id; });
+        if (needTitles.length) { (await must(B.db.from("ebooks_public").select("id,title").in("id", needTitles))).forEach(function (b) { ebTitle[b.id] = b.title; }); }
+        var ids = {}; r[0].concat(r[1]).forEach(function (x) { if (x.course_id) { ids[x.course_id] = true; } });
         var courses = Object.keys(ids).length ? await must(B.db.from("courses").select("id,title,slug").in("id", Object.keys(ids))) : [];
         var byId = {}; courses.forEach(function (c) { byId[c.id] = c; });
         var html = '<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4"><div><h2 class="h4 mb-0">Welcome' +
@@ -501,17 +505,71 @@
           var c = byId[en.course_id];
           return '<div class="col-md-6 col-lg-4"><div class="side-card h-100"><h4 class="h6">' + esc(c.title) + '</h4><a class="btn-btb btn-sm-btb" href="course.html?c=' + encodeURIComponent(c.slug) + '">Open course</a></div></div>';
         }).join("") + "</div>" : '<p class="text-muted mb-5">You have not enrolled in any paid course yet. <a href="courses.html">Browse courses</a>.</p>';
+        html += '<h3 class="h5">My ebooks</h3>';
+        html += myBooks.length ? '<div class="row g-3 mb-3">' + myBooks.map(function (b) {
+          return '<div class="col-md-6 col-lg-4"><div class="side-card h-100"><h4 class="h6">' + esc(b.title) + '</h4><button type="button" class="btn-btb btn-sm-btb" data-dl="' + esc(b.file_path) + '"><i class="bi bi-download" aria-hidden="true"></i>Download</button></div></div>';
+        }).join("") + '</div><div class="form-status mb-4" id="dlMsg" role="status" aria-live="polite"></div>' : '<p class="text-muted mb-5">You have not bought any ebooks yet. <a href="ebooks.html">Browse ebooks</a>.</p>';
         html += '<h3 class="h5">Payment history</h3>';
-        html += r[1].length ? '<div class="table-wrap"><table class="table align-middle"><thead><tr><th scope="col">Date</th><th scope="col">Course</th><th scope="col">Amount</th><th scope="col">Status</th></tr></thead><tbody>' + r[1].map(function (o) {
+        html += r[1].length ? '<div class="table-wrap"><table class="table align-middle"><thead><tr><th scope="col">Date</th><th scope="col">Item</th><th scope="col">Amount</th><th scope="col">Status</th></tr></thead><tbody>' + r[1].map(function (o) {
           var c = byId[o.course_id];
-          return "<tr><td>" + esc(new Date(o.created_at).toLocaleDateString()) + "</td><td>" + esc(c ? c.title : "Course") + "</td><td>" + esc(S.formatPrice(o.amount_paise)) +
+          return "<tr><td>" + esc(new Date(o.created_at).toLocaleDateString()) + "</td><td>" + esc(o.ebook_id ? (ebTitle[o.ebook_id] || "Ebook") : (c ? c.title : "Course")) + "</td><td>" + esc(S.formatPrice(o.amount_paise)) +
             '</td><td><span class="pay-status is-' + esc(o.status) + '">' + esc(S.statusLabel(o.status)) + "</span></td></tr>";
         }).join("") + "</tbody></table></div><p class=\"small text-muted\">\"Awaiting confirmation\" means your bank has not confirmed the payment yet; access unlocks automatically when it does.</p>" : '<p class="text-muted">No payments yet.</p>';
         el.innerHTML = html;
+        el.addEventListener("click", async function (ev) {
+          var b = ev.target.closest("[data-dl]"); if (!b) { return; }
+          var m = $("#dlMsg"); m.className = "form-status"; m.textContent = "";
+          try { window.location.href = await S.ebookUrl(b.getAttribute("data-dl")); }
+          catch (ex) { m.className = "form-status is-error"; m.textContent = "Could not start the download: " + B.friendlyError(ex); }
+        });
         $("#logoutBtn").addEventListener("click", async function () { await B.db.auth.signOut(); window.location.reload(); });
       } catch (e) { B.showError(el, B.friendlyError(e), showAccount); }
     }
     showAccount();
+  }
+
+  /* ---- Ebooks: public catalogue, buy, download ---------------------------------------------------- */
+  function initEbookShop() {
+    var el = $("#ebookView"), S = window.BTBStudent;
+    guard(el, async function () {
+      var books = await must(B.db.from("ebooks_public").select("*").order("created_at", { ascending: false }));
+      var owned = {};
+      try { if (await S.user()) { (await must(B.db.rpc("my_ebooks"))).forEach(function (b) { owned[b.id] = b.file_path; }); } } catch (e) { owned = {}; }
+      if (!books.length) { B.showEmpty(el, "book", "Ebooks are coming soon", "No ebooks are published yet. Please check back shortly."); return; }
+      el.innerHTML = '<div class="row g-4">' + books.map(function (b) {
+        var path = owned[b.id] || b.free_file_path || "";
+        var action = path
+          ? '<button type="button" class="btn-btb w-100" data-dl="' + esc(path) + '" data-id="' + esc(b.id) + '"><i class="bi bi-download" aria-hidden="true"></i>' + (owned[b.id] ? "Download" : "Free download") + "</button>"
+          : '<button type="button" class="btn-btb w-100" data-buy="' + esc(b.id) + '"><i class="bi bi-lock" aria-hidden="true"></i>Buy – ' + esc(S.formatPrice(b.price_paise)) + "</button>";
+        return '<div class="col-md-6 col-lg-4"><article class="blog-card">' +
+          '<div class="p-3 pb-0">' + B.thumbHtml(b.cover_path, b.title) + "</div>" +
+          '<div class="blog-card-body"><h2 class="h5">' + esc(b.title) + "</h2>" +
+          (b.description ? "<p>" + esc(b.description).replace(/\n/g, "<br>") + "</p>" : "<p></p>") +
+          '<div class="mb-2 fw-bold">' + (owned[b.id] ? '<span class="badge-status is-published">Purchased</span>' : esc(S.formatPrice(b.price_paise))) + "</div>" +
+          action + '<div class="form-status mt-2" data-msg="' + esc(b.id) + '" role="status" aria-live="polite"></div></div></article></div>';
+      }).join("") + "</div>";
+      var say = function (id, text, kind) { var m = el.querySelector('[data-msg="' + id + '"]'); if (m) { m.className = "form-status" + (kind ? " is-" + kind : ""); m.textContent = text; } };
+      el.addEventListener("click", async function (ev) {
+        var dl = ev.target.closest("[data-dl]"), buy = ev.target.closest("[data-buy]");
+        if (dl) {
+          var did = dl.getAttribute("data-id"); say(did, "");
+          try { window.location.href = await S.ebookUrl(dl.getAttribute("data-dl")); }
+          catch (ex) { say(did, "Could not start the download: " + B.friendlyError(ex), "error"); }
+          return;
+        }
+        if (!buy) { return; }
+        var id = buy.getAttribute("data-buy");
+        say(id, ""); buy.disabled = true;
+        try {
+          var res = await S.buy({ id: id }, { ebook: true });
+          if (res.status === "paid") { say(id, "Payment verified. Your ebook is ready!", "ok"); setTimeout(function () { window.location.reload(); }, 1200); return; }
+          if (res.status === "pending") { say(id, "Payment received and awaiting bank confirmation. The download unlocks automatically; refresh in a few minutes.", "ok"); return; }
+          if (res.status === "failed") { say(id, "The payment failed and you have not been charged. Please try again.", "error"); }
+          else { say(id, "Payment was cancelled. You have not been charged."); }
+        } catch (ex) { say(id, B.friendlyError(ex), "error"); }
+        buy.disabled = false;
+      });
+    });
   }
 
   /* ---- Password reset (the page opened from the emailed recovery link) ------------ */
@@ -563,7 +621,7 @@
     setTimeout(function () { if (!shown) { showExpired("Open this page from the link in your password-reset email, or request a new link from the sign-in page."); } }, 3500);
   }
 
-  var init = { home: initHome, courses: initCourses, course: initCourse, videos: initLibrary, watch: initWatch, contact: initContact, account: initAccount, reset: initReset }[page];
+  var init = { home: initHome, courses: initCourses, course: initCourse, videos: initLibrary, watch: initWatch, contact: initContact, account: initAccount, ebooks: initEbookShop, reset: initReset }[page];
   if (init) { init(); }
   if (window.BTBStudent) { window.BTBStudent.updateNav(); }
 })();
