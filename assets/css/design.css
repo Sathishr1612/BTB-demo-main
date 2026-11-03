@@ -9,7 +9,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
   box-shadow: 0 1px 0 #ece4f5 !important; transition: box-shadow .3s;
 }
 .site-header.is-scrolled { box-shadow: 0 6px 22px rgba(37, 18, 74, .1) !important; }
-.site-header .navbar { min-height: 0 !important; padding: .7rem 0 !important; }
+.site-header .navbar { min-height: 0 !important; padding: .4rem 0 !important; }
 .site-header .navbar > .container { flex-wrap: wrap; align-items: center; }
 
 /* brand: dark badge holds the logo, text sits on white */
@@ -146,3 +146,34 @@ html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
 .stat-icon { background: #f3e8ff; box-shadow: none; width: 2.9rem; height: 2.9rem; }
 .stat-list .stat-icon, .stat-list .stat-icon i { color: #7e22ce; }
 .stat-list .stat-text strong { font-size: clamp(1.1rem, 1.9vw, 1.4rem); }
+
+/* Full logo lockup (includes the academy name) */
+.brand img.brand-logo, .site-header.is-scrolled .brand img.brand-logo { height: 4.4rem; width: auto; border-radius: 0; }
+.footer-logo img.footer-logo-img { height: 4rem; width: auto; background: #fff; border-radius: .75rem; padding: .35rem .6rem; }
+@media (max-width: 991.98px) { .brand img.brand-logo, .site-header.is-scrolled .brand img.brand-logo { height: 3.8rem; } }
+@media (max-width: 575.98px) { .brand img.brand-logo, .site-header.is-scrolled .brand img.brand-logo { height: 3.2rem; } .footer-logo img.footer-logo-img { height: 3.4rem; } }
+
+/* ================= CHECKOUT ================= */
+.checkout-back { display: inline-flex; align-items: center; gap: .4rem; margin-bottom: 1rem; font-weight: 600; font-size: .95rem; color: #5b3a8c; text-decoration: none; }
+.checkout-back:hover { color: #7e22ce; }
+.checkout-card .form-control[readonly] { background: #f6f2fb; color: #3b3548; }
+.checkout-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.summary-rows { margin: 0 0 .75rem; }
+.summary-rows > div { display: flex; justify-content: space-between; gap: 1rem; padding: .45rem 0; border-bottom: 1px solid #ece4f5; }
+.summary-rows dt { font-weight: 500; color: #5d5670; }
+.summary-rows dd { margin: 0; font-weight: 600; color: #25124a; }
+.summary-rows .is-discount dd { color: #15803d; }
+.summary-rows .is-total { border-bottom: 0; padding-top: .75rem; }
+.summary-rows .is-total dt, .summary-rows .is-total dd { font-size: 1.15rem; font-weight: 800; color: #25124a; }
+.checkout-pay { padding-top: .95rem; padding-bottom: .95rem; font-size: 1.05rem; }
+.checkout-secure { display: flex; align-items: center; justify-content: center; gap: .45rem; margin: 1rem 0 0; font-size: .85rem; color: #5d5670; text-align: center; }
+.checkout-legal { margin: 1rem 0 0; font-size: .78rem; color: #6b6480; text-align: center; }
+.checkout-legal a { color: #7e22ce; }
+@media (max-width: 575.98px) { .checkout-pay { min-height: 3.4rem; } }
+.checkout-terms { display: flex; align-items: flex-start; gap: .6rem; margin: 1rem 0 0; font-size: .86rem; color: #3b3548; cursor: pointer; }
+.checkout-terms input { margin-top: .2rem; width: 1.1rem; height: 1.1rem; flex: none; accent-color: #7e22ce; }
+.checkout-terms a { color: #7e22ce; }
+.checkout-card .form-control.is-locked, .checkout-card .form-control.is-locked:focus { background: #f1ecf7; color: #6b6480; border-color: #e3d9f0; box-shadow: none; cursor: not-allowed; }
+.otp-box { margin: 0 0 1rem; padding: 1rem; background: #f6f0fd; border: 1px solid #e0d0f3; border-radius: .9rem; }
+.otp-input { max-width: 11rem; font-size: 1.25rem; letter-spacing: .3em; text-align: center; font-weight: 700; }
+.otp-box .btn:disabled { color: #8a82a0; text-decoration: none; }

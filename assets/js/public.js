@@ -155,16 +155,10 @@
         (thumb ? '<div class="course-hero-img">' + B.thumbHtml(c.thumbnail_path, c.title) + "</div>" : "") +
         '<div class="buy-card-body">' +
         (enrolled ? '<p class="mb-3"><span class="badge-status is-published">Enrolled</span></p>' : (c.price_paise ? priceHtml(c) : '<div class="price-block"><span class="price-now">Free</span></div>')) +
-        (!unlocked && batches.length
-          ? '<fieldset class="batch-pick"><legend>Choose your batch time</legend>' + batches.map(function (b, i) {
-              return '<label class="batch-opt"><input type="radio" name="batch" value="' + esc(b) + '"' + (batches.length === 1 ? " checked" : "") + '><span>' + esc(b) + "</span></label>";
-            }).join("") + "</fieldset>"
-          : "") +
         (unlocked
           ? (vids.length ? '<a class="btn-btb w-100" href="watch.html?v=' + encodeURIComponent(vids[0].slug) + '"><i class="bi bi-play-fill" aria-hidden="true"></i>Start learning</a>' : "")
-          : '<button type="button" class="btn-btb w-100" id="buyBtn"><i class="bi bi-lock" aria-hidden="true"></i>Enrol Now – ' + esc(S.formatPrice(c.price_paise)) + "</button>" +
+          : '<a class="btn-btb w-100" id="buyBtn" href="checkout.html?c=' + encodeURIComponent(c.slug) + '"><i class="bi bi-lock" aria-hidden="true"></i>Enrol Now – ' + esc(S.formatPrice(c.price_paise)) + "</a>" +
             (vids.some(function (v) { return v.is_preview; }) ? '<a class="btn-btb-outline w-100 mt-2" href="watch.html?v=' + encodeURIComponent(vids.filter(function (v) { return v.is_preview; })[0].slug) + '">Watch free preview</a>' : "")) +
-        '<div class="form-status mt-3" id="buyMsg" role="status" aria-live="polite"></div>' +
         (perks.length ? '<ul class="perk-list">' + perks.map(function (p) { return '<li><i class="bi bi-check2-circle" aria-hidden="true"></i>' + esc(p) + "</li>"; }).join("") + "</ul>" : "") +
         "</div></aside></div></div>";
 
@@ -194,27 +188,6 @@
       html += "</section>";
       el.innerHTML = html;
 
-      var buy = $("#buyBtn"), msg = $("#buyMsg");
-      if (buy) {
-        var say = function (text, kind) { msg.className = "form-status" + (kind ? " is-" + kind : ""); msg.textContent = text; };
-        buy.addEventListener("click", async function () {
-          say("");
-          var picked = null;
-          if (batches.length) {
-            picked = B.$$('input[name="batch"]', el).filter(function (x) { return x.checked; })[0] || null;
-            if (!picked) { say("Please choose a batch time first.", "error"); return; }
-          }
-          buy.disabled = true;
-          try {
-            var res = await S.buy(c, { batch_time: picked ? picked.value : "" });
-            if (res.status === "paid") { say("Payment verified. Your course is unlocked!", "ok"); setTimeout(function () { window.location.reload(); }, 1200); return; }
-            if (res.status === "pending") { say("Your payment was received and is awaiting bank confirmation. Access unlocks automatically once it is confirmed - refresh this page in a few minutes.", "ok"); return; }
-            if (res.status === "failed") { say("The payment failed and you have not been charged. Please try again.", "error"); }
-            else { say("Payment was cancelled. You have not been charged."); }
-          } catch (ex) { say(B.friendlyError(ex), "error"); }
-          buy.disabled = false;
-        });
-      }
     });
   }
 
@@ -467,7 +440,7 @@
         try {
           var email = form.elements.email.value.trim(), pw = form.elements.password.value, r;
           if (mode === "up") {
-            r = await B.db.auth.signUp({ email: email, password: pw, options: { data: { full_name: form.elements.name.value.trim() } } });
+            r = await B.db.auth.signUp({ email: email, password: pw, options: { data: { full_name: form.elements.name.value.trim() }, emailRedirectTo: new URL("account.html", window.location.href).href } });
             if (r.error) { throw r.error; }
             if (!r.data.session) { say("Account created. Please check your email and click the confirmation link, then sign in.", "ok"); btn.disabled = false; return; }
           } else {
@@ -542,7 +515,7 @@
           ? '<button type="button" class="btn-btb w-100" data-dl="' + esc(path) + '" data-id="' + esc(b.id) + '"><i class="bi bi-download" aria-hidden="true"></i>' + (owned[b.id] ? "Download" : "Free download") + "</button>"
           : '<button type="button" class="btn-btb w-100" data-buy="' + esc(b.id) + '"><i class="bi bi-lock" aria-hidden="true"></i>Buy – ' + esc(S.formatPrice(b.price_paise)) + "</button>";
         return '<div class="col-md-6 col-lg-4"><article class="blog-card">' +
-          '<div class="p-3 pb-0">' + B.thumbHtml(b.cover_path, b.title) + "</div>" +
+          '<div class="p-3 pb-0">' + B.thumbHtml(b.cover_path, b.title, "thumb-ebook") + "</div>" +
           '<div class="blog-card-body"><h2 class="h5">' + esc(b.title) + "</h2>" +
           (b.description ? "<p>" + esc(b.description).replace(/\n/g, "<br>") + "</p>" : "<p></p>") +
           '<div class="mb-2 fw-bold">' + (owned[b.id] ? '<span class="badge-status is-published">Purchased</span>' : esc(S.formatPrice(b.price_paise))) + "</div>" +
@@ -621,7 +594,180 @@
     setTimeout(function () { if (!shown) { showExpired("Open this page from the link in your password-reset email, or request a new link from the sign-in page."); } }, 3500);
   }
 
-  var init = { home: initHome, courses: initCourses, course: initCourse, videos: initLibrary, watch: initWatch, contact: initContact, account: initAccount, ebooks: initEbookShop, reset: initReset }[page];
+  /* ---- Checkout: everything on ONE page (details, email check, order summary, Pay Now) -------------- */
+  /* A student who is not signed in verifies their email with a 6-digit code on this same page; no password and
+     no separate login page. The course is then linked to that verified email. */
+  function initCheckout() {
+    var el = $("#checkoutView"), slug = B.param("c"), S = window.BTBStudent;
+    var browse = '<a class="btn-btb btn-sm-btb" href="courses.html">Browse courses</a>';
+    if (!slug) { B.showEmpty(el, "search", "No course selected", "Choose a course first, then press Enrol Now.", browse); return; }
+    guard(el, async function () {
+      var u = await S.user();   // null when the student has not signed in yet; that is fine on this page
+      var rows = await must(B.db.from("courses").select("*").eq("status", "published").eq("slug", slug).limit(1));
+      if (!rows.length) { B.showEmpty(el, "search", "Course not found", "This course does not exist or is not published.", browse); return; }
+      var c = rows[0], back = "course.html?c=" + encodeURIComponent(c.slug);
+      if (!c.price_paise) { B.showEmpty(el, "gift", "This course is free", "No payment is needed. Open the course to start learning.", '<a class="btn-btb btn-sm-btb" href="' + back + '">Open course</a>'); return; }
+      var ownedHtml = function () { B.showEmpty(el, "check-circle", "You already have this course", "It is in your account, so there is nothing to pay.", '<a class="btn-btb btn-sm-btb" href="account.html">Go to My Courses</a>'); };
+      if (u) {
+        var enrolled = false;
+        try { enrolled = await S.isEnrolled(c.id); } catch (e) { enrolled = false; }
+        if (enrolled) { ownedHtml(); return; }
+      }
+      setMeta("Checkout - " + c.title + " | Break the Barriers Academy", "Secure checkout at Break the Barriers Academy.");
+
+      var pi = priceInfo(c), batches = lines(c.batch_times), perks = lines(c.highlights).slice(0, 4);
+      var meta = (u && u.user_metadata) || {}, wa = meta.whatsapp || "";
+      var emailField = u
+        ? '<label class="form-label" for="coEmail">Email address <i class="bi bi-lock-fill text-muted small" aria-hidden="true"></i></label><input class="form-control is-locked" id="coEmail" type="email" value="' + esc(u.email || "") + '" readonly tabindex="-1" aria-readonly="true">' +
+          '<div class="form-text">Your course is linked to this email, so it cannot be changed here.</div>'
+        : '<label class="form-label" for="coEmail">Email address</label><input class="form-control" id="coEmail" type="email" maxlength="120" autocomplete="email" placeholder="you@example.com" required>' +
+          '<div class="form-text">Your course is linked to this email. We send a 6-digit code to confirm it - no password needed.</div>';
+      var html = '<a class="checkout-back" href="' + back + '"><i class="bi bi-arrow-left" aria-hidden="true"></i>Back to course</a>' +
+        '<h1 class="h2 mb-1">Checkout</h1><p class="text-muted mb-4">Fill in your details and pay securely. Everything is on this page.</p>' +
+        '<div class="row g-4 g-lg-5 align-items-start"><div class="col-lg-7"><div class="form-card checkout-card">' +
+        '<h2 class="h5 mb-3">Your details</h2>' +
+        '<div class="mb-3"><label class="form-label" for="coName">Full name</label><input class="form-control" id="coName" maxlength="80" autocomplete="name" placeholder="Your full name" value="' + esc(meta.full_name || "") + '" required></div>' +
+        '<div class="mb-3">' + emailField + "</div>" +
+        '<div class="otp-box" id="coOtp" hidden>' +
+          '<p class="mb-2"><strong>Check your email.</strong> We sent a 6-digit code to <span id="coOtpEmail"></span>.</p>' +
+          '<div class="d-flex flex-wrap gap-2 align-items-stretch"><input class="form-control otp-input" id="coCode" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456" aria-label="6-digit code">' +
+          '<button type="button" class="btn-btb btn-sm-btb" id="coVerify">Verify &amp; pay</button></div>' +
+          '<div class="form-status mt-2" id="coOtpMsg" role="status" aria-live="polite"></div>' +
+          '<p class="small mb-0 mt-2"><button type="button" class="btn btn-link p-0 small align-baseline" id="coResend">Send a new code</button> &middot; <button type="button" class="btn btn-link p-0 small align-baseline" id="coChange">Use a different email</button></p>' +
+        "</div>" +
+        '<div class="mb-3"><label class="form-label" for="coWa">WhatsApp number <span class="text-muted fw-normal">(optional)</span></label>' +
+        '<input class="form-control" id="coWa" type="tel" inputmode="tel" maxlength="16" autocomplete="tel" placeholder="e.g. 9876543210" value="' + esc(wa) + '">' +
+        '<div class="form-text">We use it to share class updates and the joining link.</div></div>' +
+        (batches.length
+          ? '<fieldset class="batch-pick"><legend>Choose your batch time</legend>' + batches.map(function (b) {
+              return '<label class="batch-opt"><input type="radio" name="batch" value="' + esc(b) + '"' + (batches.length === 1 ? " checked" : "") + '><span>' + esc(b) + "</span></label>";
+            }).join("") + "</fieldset>"
+          : "") +
+        (u ? '<p class="small text-muted mb-0">Signed in as ' + esc(u.email || "") + '. Wrong account? <button type="button" class="btn btn-link p-0 small align-baseline" id="coSignOut">Sign out</button></p>' : "") +
+        "</div></div>" +
+        '<div class="col-lg-5"><aside class="buy-card checkout-summary" aria-label="Order summary">' +
+        '<div class="course-hero-img">' + B.thumbHtml(c.thumbnail_path, c.title) + "</div>" +
+        '<div class="buy-card-body"><h2 class="h6 text-uppercase text-muted mb-2">Order summary</h2>' +
+        '<span class="level-badge' + (c.delivery === "live" ? " level-badge--live" : "") + ' mb-2">' + (c.delivery === "live" ? "Live batch course" : "Recorded course") + "</span>" +
+        '<h3 class="h5 mb-1">' + esc(c.title) + "</h3>" +
+        (c.description ? '<p class="small text-muted mb-2 checkout-desc">' + esc(c.description) + "</p>" : "") +
+        (c.duration_label ? '<p class="small mb-3"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>' + esc(c.duration_label) + "</p>" : "") +
+        '<dl class="summary-rows">' +
+        "<div><dt>Course price</dt><dd>" + esc(S.formatPrice(pi.cmp || c.price_paise)) + "</dd></div>" +
+        (pi.cmp ? '<div class="is-discount"><dt>Discount (' + pi.off + "%)</dt><dd>- " + esc(S.formatPrice(pi.cmp - c.price_paise)) + "</dd></div>" : "") +
+        '<div class="is-total"><dt>Total payable</dt><dd>' + esc(S.formatPrice(c.price_paise)) + "</dd></div></dl>" +
+        (c.tax_note ? '<p class="price-note">' + esc(c.tax_note) + "</p>" : "") +
+        '<button type="button" class="btn-btb w-100 checkout-pay" id="coPay"><i class="bi bi-lock" aria-hidden="true"></i>Pay Now – ' + esc(S.formatPrice(c.price_paise)) + "</button>" +
+        '<div class="form-status mt-3" id="coMsg" role="status" aria-live="polite"></div>' +
+        '<p class="checkout-secure"><i class="bi bi-shield-lock" aria-hidden="true"></i>Secure payment by Razorpay. UPI, cards and netbanking accepted.</p>' +
+        (perks.length ? '<ul class="perk-list">' + perks.map(function (p) { return '<li><i class="bi bi-check2-circle" aria-hidden="true"></i>' + esc(p) + "</li>"; }).join("") + "</ul>" : "") +
+        '<label class="checkout-terms"><input type="checkbox" id="coTerms"><span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>, <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="refund-policy.html" target="_blank" rel="noopener">Refund Policy</a>.</span></label>' +
+        "</div></aside></div></div>";
+      el.innerHTML = html;
+
+      var pay = $("#coPay"), msg = $("#coMsg"), waEl = $("#coWa"), nameEl = $("#coName"), emailEl = $("#coEmail"), termsEl = $("#coTerms");
+      var otp = $("#coOtp"), codeEl = $("#coCode"), otpMsg = $("#coOtpMsg"), verifyBtn = $("#coVerify"), resendBtn = $("#coResend"), changeBtn = $("#coChange");
+      var savedName = meta.full_name || "";
+      var say = function (text, kind) { msg.className = "form-status mt-3" + (kind ? " is-" + kind : ""); msg.textContent = text; };
+      var osay = function (text, kind) { otpMsg.className = "form-status mt-2" + (kind ? " is-" + kind : ""); otpMsg.textContent = text; };
+      var otpError = function (e) {
+        var m = (e && e.message) || "";
+        return /rate|seconds|too many|limit/i.test(m) ? "Too many attempts. Please wait a minute and try again." : B.friendlyError(e);
+      };
+      var signOutBtn = $("#coSignOut");
+      if (signOutBtn) { signOutBtn.addEventListener("click", async function () { await B.db.auth.signOut(); window.location.reload(); }); }
+
+      /* Email check on this page: send a 6-digit code, wait for the student to type it, resolve with the signed-in user (or null). */
+      function verifyEmail(email, fullName, num) {
+        return new Promise(function (resolve) {
+          var finished = false, cooldown = null;
+          function finish(user) {
+            if (finished) { return; } finished = true;
+            if (cooldown) { clearInterval(cooldown); }
+            otp.hidden = true; resolve(user);
+          }
+          async function send(isResend) {
+            osay("Sending the code...");
+            var r = await B.db.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true, data: { full_name: fullName, whatsapp: num } } });
+            if (r.error) { osay(otpError(r.error), "error"); return false; }
+            osay((isResend ? "A new code was sent. " : "Code sent. ") + "Check your inbox and spam folder.", "ok");
+            var left = 30; resendBtn.disabled = true; resendBtn.textContent = "Send a new code (" + left + "s)";
+            if (cooldown) { clearInterval(cooldown); }
+            cooldown = setInterval(function () {
+              left -= 1;
+              if (left <= 0) { clearInterval(cooldown); cooldown = null; resendBtn.disabled = false; resendBtn.textContent = "Send a new code"; }
+              else { resendBtn.textContent = "Send a new code (" + left + "s)"; }
+            }, 1000);
+            return true;
+          }
+          async function check() {
+            var token = codeEl.value.replace(/\s/g, "");
+            if (!/^\d{6,8}$/.test(token)) { osay("Enter the 6-digit code from your email.", "error"); codeEl.focus(); return; }
+            verifyBtn.disabled = true; osay("Checking the code...");
+            var r = await B.db.auth.verifyOtp({ email: email, token: token, type: "email" });
+            verifyBtn.disabled = false;
+            if (r.error || !r.data || !r.data.user) { osay("That code is not correct or has expired. Check it, or send a new code.", "error"); codeEl.select(); return; }
+            finish(r.data.user);
+          }
+          verifyBtn.onclick = check;
+          codeEl.onkeydown = function (ev) { if (ev.key === "Enter") { ev.preventDefault(); check(); } };
+          resendBtn.onclick = function () { send(true); };
+          changeBtn.onclick = function () { finish(null); };
+          send(false).then(function (ok) {
+            if (!ok) { otp.hidden = false; $("#coOtpEmail").textContent = email; return; }
+            $("#coOtpEmail").textContent = email; otp.hidden = false; codeEl.value = ""; codeEl.focus();
+          });
+        });
+      }
+
+      pay.addEventListener("click", async function () {
+        say("");
+        var picked = null;
+        if (batches.length) {
+          picked = B.$$('input[name="batch"]', el).filter(function (x) { return x.checked; })[0] || null;
+          if (!picked) { say("Please choose a batch time first.", "error"); return; }
+        }
+        var fullName = nameEl.value.trim();
+        if (fullName.length < 2) { say("Please enter your full name.", "error"); nameEl.focus(); return; }
+        var email = emailEl.value.trim();
+        if (!u && (!email || !emailEl.checkValidity())) { say("Please enter a valid email address.", "error"); emailEl.focus(); return; }
+        var num = waEl.value.replace(/[\s-]/g, "");
+        if (num && !/^\+?\d{10,13}$/.test(num)) { say("Enter a valid WhatsApp number, or leave it empty.", "error"); waEl.focus(); return; }
+        if (!termsEl.checked) { say("Please tick the box to agree to the Terms and Refund Policy.", "error"); termsEl.focus(); return; }
+        pay.disabled = true;
+        try {
+          if (!u) {
+            emailEl.readOnly = true;
+            u = await verifyEmail(email, fullName, num);
+            if (!u) { emailEl.readOnly = false; emailEl.focus(); pay.disabled = false; return; }   // student chose to change the email
+            emailEl.classList.add("is-locked"); emailEl.tabIndex = -1;
+            S.updateNav();
+            var already = false;
+            try { already = await S.isEnrolled(c.id); } catch (e) { already = false; }
+            if (already) { ownedHtml(); return; }
+            savedName = (u.user_metadata && u.user_metadata.full_name) || "";
+            wa = (u.user_metadata && u.user_metadata.whatsapp) || "";
+          }
+          if (num !== wa || fullName !== savedName) {
+            var up = await B.db.auth.updateUser({ data: { full_name: fullName, whatsapp: num } });
+            if (!up.error) { wa = num; savedName = fullName; }
+            else if (fullName !== savedName) { say("Could not save your name. Please try again.", "error"); pay.disabled = false; return; }
+          }
+          var res = await S.buy(c, { batch_time: picked ? picked.value : "" });
+          if (res.status === "paid") {
+            B.showEmpty(el, "check-circle", "Payment successful", "Thank you! " + c.title + " is now in your account.", '<a class="btn-btb btn-sm-btb" href="account.html">Go to My Courses</a>');
+            return;
+          }
+          if (res.status === "pending") { say("Your payment was received and is awaiting bank confirmation. Access unlocks automatically once it is confirmed - check My Courses in a few minutes.", "ok"); }
+          else if (res.status === "failed") { say("The payment failed and you have not been charged. Please try again.", "error"); }
+          else { say("Payment was cancelled. You have not been charged."); }
+        } catch (ex) { say(B.friendlyError(ex), "error"); }
+        pay.disabled = false;
+      });
+    });
+  }
+
+  var init = { home: initHome, courses: initCourses, course: initCourse, checkout: initCheckout, videos: initLibrary, watch: initWatch, contact: initContact, account: initAccount, ebooks: initEbookShop, reset: initReset }[page];
   if (init) { init(); }
   if (window.BTBStudent) { window.BTBStudent.updateNav(); }
 })();

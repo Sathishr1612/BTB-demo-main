@@ -14,6 +14,11 @@ window.BTB_CONFIG = {
   // --- Upload limits. Keep in sync with the bucket limits in 03_storage.sql and your Supabase plan.
   //     Free plan: 50 MB per file maximum. Pro plan: raise the global limit in Storage settings first. ---
   maxVideoMB: 50,
+
+  // --- Where NEW lesson videos are uploaded: "supabase" (bucket above, 50 MB on the free plan) or "r2"
+  //     (Cloudflare R2 via the r2-video Edge Function, no streaming fees). Old videos keep playing either way. ---
+  videoStorage: "supabase",
+  r2MaxVideoMB: 4096,
   maxThumbMB: 2,
   videoTypes: ["video/mp4", "video/webm"],
   ebookBucket: "ebook-files",

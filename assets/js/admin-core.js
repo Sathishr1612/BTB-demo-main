@@ -100,11 +100,24 @@
   /* Remove files from a bucket. Returns the list of paths that could NOT be removed. */
   A.removeFiles = async function (bucket, paths) {
     paths = paths.filter(Boolean);
-    if (!paths.length) { return []; }
+    var left = [];
+    for (var i = 0; i < paths.length; i++) { // R2 videos are deleted through the Edge Function
+      if (!/^r2:/.test(paths[i])) { continue; }
+      try { await A.r2(paths[i], "delete"); } catch (e) { left.push(paths[i]); }
+    }
+    paths = paths.filter(function (p) { return !/^r2:/.test(p); });
+    if (!paths.length) { return left; }
     var r = await B.db.storage.from(bucket).remove(paths);
-    if (r.error) { return paths; }
+    if (r.error) { return left.concat(paths); }
     var gone = (r.data || []).map(function (o) { return o.name; });
-    return paths.filter(function (p) { return gone.indexOf(p) === -1; });
+    return left.concat(paths.filter(function (p) { return gone.indexOf(p) === -1; }));
+  };
+
+  /* Call the r2-video Edge Function (admin actions: "upload" returns a signed PUT url, "delete"). */
+  A.r2 = async function (path, action) {
+    var r = await B.db.functions.invoke("r2-video", { body: { action: action, path: path } });
+    if (r.error || !r.data) { throw r.error || new Error("The video service did not respond."); }
+    return r.data;
   };
 
   A.fileExt = function (file) {
@@ -116,7 +129,7 @@
   /* Validate a chosen file. Returns an error string or "". */
   A.checkFile = function (file, kind) {
     var C = B.config, isVideo = kind === "video";
-    var types = isVideo ? C.videoTypes : kind === "ebook" ? C.ebookTypes : C.thumbTypes, maxMB = isVideo ? C.maxVideoMB : kind === "ebook" ? C.maxEbookMB : C.maxThumbMB;
+    var types = isVideo ? C.videoTypes : kind === "ebook" ? C.ebookTypes : C.thumbTypes, maxMB = isVideo ? (C.videoStorage === "r2" ? C.r2MaxVideoMB : C.maxVideoMB) : kind === "ebook" ? C.maxEbookMB : C.maxThumbMB;
     if (types.indexOf(file.type) === -1) {
       return "Unsupported file type" + (file.type ? " (" + file.type + ")" : "") + ". Allowed: " + types.map(function (t) { return t.split("/")[1].toUpperCase(); }).join(", ") + ".";
     }
@@ -132,7 +145,23 @@
   };
 
   /* Resumable (TUS) upload for videos. `ctl.abort()` cancels. onProgress(percent). */
-  A.uploadVideo = function (file, path, onProgress, ctl) { return A.uploadResumable(B.config.videoBucket, file, path, onProgress, ctl); };
+  A.uploadVideo = function (file, path, onProgress, ctl) {
+    return /^r2:/.test(path) ? A.uploadR2(file, path, onProgress, ctl) : A.uploadResumable(B.config.videoBucket, file, path, onProgress, ctl);
+  };
+  /* Upload straight from the browser to Cloudflare R2 with a signed PUT link (one request, up to 5 GB). */
+  A.uploadR2 = async function (file, path, onProgress, ctl) {
+    var signed = await A.r2(path, "upload");
+    return new Promise(function (resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("PUT", signed.url);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.upload.onprogress = function (e) { if (e.lengthComputable) { onProgress(Math.floor(e.loaded / e.total * 100)); } };
+      xhr.onload = function () { if (xhr.status >= 200 && xhr.status < 300) { resolve(); } else { reject(new Error("Upload to R2 failed (" + xhr.status + ").")); } };
+      xhr.onerror = function () { reject(new Error("Upload to R2 failed. Check your connection and the R2 CORS settings.")); };
+      ctl.abort = function () { xhr.abort(); reject(new Error("Upload cancelled")); };
+      xhr.send(file);
+    });
+  };
   A.uploadResumable = function (bucket, file, path, onProgress, ctl) {
     var C = B.config;
     return new Promise(function (resolve, reject) {

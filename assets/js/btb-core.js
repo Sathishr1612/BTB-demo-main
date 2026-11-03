@@ -74,6 +74,11 @@
   };
   /* Short-lived signed link to a lesson video. RLS only allows this for published lessons (admins: all). */
   B.signedVideoUrl = async function (path) {
+    if (/^r2:/.test(path)) { // Cloudflare R2: the r2-video Edge Function applies the same access rule
+      var f = await B.db.functions.invoke("r2-video", { body: { action: "play", path: path } });
+      if (f.error || !f.data || !f.data.url) { throw f.error || new Error("Could not create video link"); }
+      return f.data.url;
+    }
     var r = await B.db.storage.from(C.videoBucket).createSignedUrl(path, C.signedUrlSeconds || 7200);
     if (r.error || !r.data || !r.data.signedUrl) { throw r.error || new Error("Could not create video link"); }
     return r.data.signedUrl;

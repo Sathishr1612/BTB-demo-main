@@ -26,7 +26,12 @@ code { color: var(--btb-purple-deep); }
 .catalog-thumb { position: relative; display: block; }
 .thumb { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #3d1f7a, #25124a); overflow: hidden; }
 .thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.thumb-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: rgba(255, 255, 255, .55); }
+.thumb-ph { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: rgba(255, 255, 255, .55); background: url("../images/thumb-1.jpg") center / cover no-repeat; }
+.row > div:nth-child(5n+2) .thumb-ph { background-image: url("../images/thumb-2.jpg"); }
+.row > div:nth-child(5n+3) .thumb-ph { background-image: url("../images/thumb-3.jpg"); }
+.row > div:nth-child(5n+4) .thumb-ph { background-image: url("../images/thumb-4.jpg"); }
+.row > div:nth-child(5n) .thumb-ph { background-image: url("../images/thumb-5.jpg"); }
+.thumb-ph .bi { display: none; }
 .dur-badge { position: absolute; right: .6rem; bottom: .6rem; background: rgba(27, 14, 56, .88); color: #fff; font-size: .78rem; font-weight: 600; padding: .15rem .5rem; border-radius: .4rem; }
 .catalog-body { display: flex; flex-direction: column; gap: .5rem; padding: 1.15rem 1.25rem 1.35rem; flex: 1; }
 .catalog-body h3 { font-size: 1.12rem; margin: 0; }
@@ -194,7 +199,7 @@ code { color: var(--btb-purple-deep); }
 .prose ul, .prose ol { padding-left: 1.25rem; }
 .prose li { margin-bottom: .4rem; }
 .draft-note { background: #fff8e1; border: 1px solid #e8c95a; border-left-width: 4px; border-radius: var(--btb-radius-sm); padding: .85rem 1rem; margin-bottom: 1.5rem; font-size: .95rem; }
-.faq-wrap { max-width: 50rem; }
+.faq-wrap { max-width: 50rem; margin-left: auto; margin-right: auto; }
 .footer-legal { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; }
 
 /* ---- Course purchase card (price, batch choice, what you get) ---- */
@@ -220,6 +225,9 @@ code { color: var(--btb-purple-deep); }
 .blog-card { display: flex; flex-direction: column; height: 100%; background: #fff; border: 1px solid var(--btb-line); border-radius: var(--btb-radius); overflow: hidden; box-shadow: var(--btb-shadow-sm); transition: transform .25s ease, box-shadow .25s ease; }
 .blog-card:hover { transform: translateY(-4px); box-shadow: var(--btb-shadow); }
 .blog-card img { width: 100%; height: auto; aspect-ratio: 8 / 5; object-fit: cover; display: block; }
+/* Ebook covers are portrait (book-shaped), not 16:9 like video thumbnails */
+.thumb.thumb-ebook { aspect-ratio: 3 / 4; border-radius: .6rem; }
+.thumb-ebook img { height: 100%; aspect-ratio: auto; }
 .blog-card-body { padding: 1.4rem 1.4rem 1.6rem; display: flex; flex-direction: column; flex: 1; }
 .blog-tag { display: inline-block; align-self: flex-start; font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--btb-purple-deep); background: var(--btb-lavender-soft); padding: .25rem .7rem; border-radius: 99px; margin-bottom: .75rem; }
 .blog-card h3 { font-size: 1.2rem; line-height: 1.35; margin-bottom: .6rem; }

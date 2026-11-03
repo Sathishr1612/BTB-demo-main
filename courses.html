@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co; font-src 'self'; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://*.supabase.co; media-src 'self' blob: https://*.supabase.co https://*.r2.cloudflarestorage.com; font-src 'self'; connect-src 'self' https://*.supabase.co https://*.r2.cloudflarestorage.com; object-src 'none'; base-uri 'self'; form-action 'self'">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Video Courses | Break the Barriers Academy</title>
   <meta name="description" content="Browse spoken English courses at Break the Barriers Academy. See modules, lessons and start learning online.">
@@ -31,8 +31,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Main navigation">
       <div class="container">
         <a class="brand" href="index.html" aria-label="Break the Barriers Academy — home">
-          <img src="assets/images/btb-logo.svg" width="64" height="64" alt="BTB logo">
-          <span class="brand-text"><span class="brand-name">Break the Barriers</span><span class="brand-sub">Academy</span></span>
+          <img class="brand-logo" src="assets/images/btb-logo-full.png" width="150" height="72" alt="Break the Barriers Academy">
         </a>
         <div class="d-flex align-items-center gap-2 ms-auto order-lg-last">
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
@@ -43,6 +42,7 @@
           <li class="nav-item"><a class="nav-link" href="index.html#about">About</a></li>
           <li class="nav-item"><a class="nav-link" href="live-classes.html">Live Classes</a></li>
           <li class="nav-item"><a class="nav-link" aria-current="page" href="courses.html">Video Courses</a></li>
+          <li class="nav-item"><a class="nav-link" href="ebooks.html">Ebooks</a></li>
           <li class="nav-item"><a class="nav-link" href="testimonials.html">Testimonials</a></li>
           <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
           <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
@@ -62,8 +62,8 @@
       <div class="row g-5">
         <div class="col-lg-4 footer-brand">
           <a class="footer-logo" href="index.html" aria-label="Break the Barriers Academy home">
-            <img src="assets/images/btb-logo.svg" width="60" height="60" alt="BTB logo" loading="lazy">
-            <span><strong>Break the Barriers Academy</strong><em>Speak Beyond Limits.</em></span>
+            <img class="footer-logo-img" src="assets/images/btb-logo-full.png" width="150" height="72" alt="Break the Barriers Academy" loading="lazy">
+            <span><em>Speak Beyond Limits.</em></span>
           </a>
           <p>Online spoken-English and communication training. Learn It. Practise It. Speak It.</p>
         </div>

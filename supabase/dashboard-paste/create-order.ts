@@ -20,6 +20,15 @@ export const json = (body: unknown, status = 200) =>
 export const adminClient = () =>
   createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), { auth: { persistSession: false } });
 
+/** Client that acts as the caller (their user JWT, or anon), so RLS and auth.uid() apply. */
+export const userClient = (req: Request) => {
+  const auth = req.headers.get("Authorization") ?? "";
+  // Signed-out browsers send the publishable key here, which is not a user JWT: treat them as anon.
+  return createClient(env("SUPABASE_URL"), env("SUPABASE_ANON_KEY"), {
+    auth: { persistSession: false }, global: { headers: auth.startsWith("Bearer ey") ? { Authorization: auth } : {} },
+  });
+};
+
 /** Resolve the signed-in user from the request's JWT, or null. */
 export async function getUser(req: Request) {
   const auth = req.headers.get("Authorization") ?? "";
@@ -59,7 +68,6 @@ export async function razorpay(path: string, init: { method?: string; body?: unk
 }
 
 export const isUuid = (s: unknown) => typeof s === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
-
 // POST { course_id, batch_time? }  or  POST { ebook_id }   (signed-in student)
 // -> creates a Razorpay order priced from the DATABASE, never from the browser.
 

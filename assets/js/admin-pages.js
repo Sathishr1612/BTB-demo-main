@@ -245,7 +245,7 @@
           await A.uploadSmall(C.thumbBucket, newThumb, thumbFile);
         }
         if (videoFile) {
-          newVideo = els.course.value + "/" + id + "/" + B.randomSuffix() + "." + A.fileExt(videoFile);
+          newVideo = (C.videoStorage === "r2" ? "r2:" : "") + els.course.value + "/" + id + "/" + B.randomSuffix() + "." + A.fileExt(videoFile);
           prog.hidden = false; bar.style.width = "0%";
           await A.uploadVideo(videoFile, newVideo, function (p) {
             bar.style.width = p + "%"; bar.setAttribute("aria-valuenow", p); progText.textContent = "Uploading video... " + p + "%";

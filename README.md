@@ -137,3 +137,13 @@ Run `supabase/09_ebook_sales.sql` (after 01-05 and 07), then redeploy `create-or
 * Admin Dashboard and Orders numbers come from `admin_payment_stats()` (verified `captured` payments), not from browser sums. The orders table lists the latest 1000 orders.
 * An ebook (or course) that has paid orders cannot be deleted (foreign key RESTRICT); unpublish it instead.
 * Not built: refunds in the UI, invoices, a "my ebooks" email, ebook bundles.
+
+## Lesson videos on Cloudflare R2 (optional, no streaming fees)
+New uploads go to R2 when `videoStorage: "r2"` is set in `config.js`; their path is saved as `r2:{course}/{video}/{file}`. Videos already in Supabase keep playing.
+The `r2-video` Edge Function signs every upload/playback link and applies the same access rule (`can_stream_video_path()`): free course, preview lesson, enrolled student or admin.
+1. Cloudflare → R2 → create a **private** bucket (e.g. `btb-videos`). Bucket → Settings → CORS policy:
+   `[{"AllowedOrigins":["https://your-site","http://127.0.0.1:5500"],"AllowedMethods":["GET","PUT","HEAD"],"AllowedHeaders":["*"],"MaxAgeSeconds":3600}]`
+2. R2 → Manage API tokens → *Object Read & Write*, limited to that bucket. Note the Access Key ID, Secret Access Key and Account ID.
+3. Supabase secrets: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
+4. `supabase functions deploy r2-video --no-verify-jwt` (or paste `supabase/dashboard-paste/r2-video.ts` in the dashboard and turn **Verify JWT off**).
+5. Set `videoStorage: "r2"` in `config.js`. Uploads are single PUT requests (R2 limit 5 GB; `r2MaxVideoMB` sets the form limit).

@@ -18,6 +18,15 @@ export const json = (body: unknown, status = 200) =>
 export const adminClient = () =>
   createClient(env("SUPABASE_URL"), env("SUPABASE_SERVICE_ROLE_KEY"), { auth: { persistSession: false } });
 
+/** Client that acts as the caller (their user JWT, or anon), so RLS and auth.uid() apply. */
+export const userClient = (req: Request) => {
+  const auth = req.headers.get("Authorization") ?? "";
+  // Signed-out browsers send the publishable key here, which is not a user JWT: treat them as anon.
+  return createClient(env("SUPABASE_URL"), env("SUPABASE_ANON_KEY"), {
+    auth: { persistSession: false }, global: { headers: auth.startsWith("Bearer ey") ? { Authorization: auth } : {} },
+  });
+};
+
 /** Resolve the signed-in user from the request's JWT, or null. */
 export async function getUser(req: Request) {
   const auth = req.headers.get("Authorization") ?? "";
