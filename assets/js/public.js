@@ -688,7 +688,8 @@
           }
           async function send(isResend) {
             osay("Sending the code...");
-            var r = await B.db.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true, data: { full_name: fullName, whatsapp: num } } });
+            // If the student clicks the emailed link instead of typing the code, bring them back to this checkout, signed in.
+            var r = await B.db.auth.signInWithOtp({ email: email, options: { shouldCreateUser: true, data: { full_name: fullName, whatsapp: num }, emailRedirectTo: window.location.href.split("#")[0] } });
             if (r.error) { osay(otpError(r.error), "error"); return false; }
             osay((isResend ? "A new code was sent. " : "Code sent. ") + "Check your inbox and spam folder.", "ok");
             var left = 30; resendBtn.disabled = true; resendBtn.textContent = "Send a new code (" + left + "s)";

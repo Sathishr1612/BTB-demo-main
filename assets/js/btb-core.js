@@ -20,13 +20,15 @@
       !/YOUR-/i.test(C.supabaseUrl || "") && !!C.supabaseKey && !/YOUR-/i.test(C.supabaseKey);
   };
 
-  /* Only the password-reset page reads tokens from the URL (the emailed recovery link); every other page ignores them. */
-  var onResetPage = !!document.body && document.body.getAttribute("data-page") === "reset";
+  /* Only pages that emailed links point to read tokens from the URL: password reset, checkout (sign-in link)
+     and account (signup confirmation). Every other page ignores them. */
+  var pageName = document.body ? document.body.getAttribute("data-page") : "";
+  var readsUrlTokens = ["reset", "checkout", "account"].indexOf(pageName) !== -1;
 
   B.db = null;
   if (B.isConfigured() && !/sb_secret_/i.test(C.supabaseKey) && !isServiceRoleJwt(C.supabaseKey) && window.supabase && window.supabase.createClient) {
     B.db = window.supabase.createClient(C.supabaseUrl, C.supabaseKey, {
-      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: onResetPage }
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: readsUrlTokens }
     });
   }
 
